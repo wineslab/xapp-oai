@@ -1,6 +1,9 @@
 import logging
 from xapp_control import *
+import xapp_control_ricbypass
+from  ran_messages_pb2 import *
 
+BYPASS_RIC = True
 
 def main():
     # configure logger and console output
@@ -12,6 +15,19 @@ def main():
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
     
+    if BYPASS_RIC: # connect directly to gnb_emu
+        #xapp_control_ricbypass.receive_from_socket()
+
+        master_mess = RAN_message()
+        master_mess.msg_type = RAN_message_type.INDICATION_REQUEST
+        inner_mess = RAN_indication_request()
+        inner_mess.target_params.extend([RAN_parameter.GNB_ID, RAN_parameter.SOMETHING])
+        master_mess.ran_indication_request.CopyFrom(inner_mess)
+        buf = master_mess.SerializeToString()
+
+        xapp_control_ricbypass.sent_to_socket(buf)
+        exit()
+
     control_sck = open_control_socket(4200)
 
     while True:
