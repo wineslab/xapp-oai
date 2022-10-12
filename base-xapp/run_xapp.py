@@ -21,11 +21,17 @@ def main():
         master_mess = RAN_message()
         master_mess.msg_type = RAN_message_type.INDICATION_REQUEST
         inner_mess = RAN_indication_request()
-        inner_mess.target_params.extend([RAN_parameter.GNB_ID, RAN_parameter.SOMETHING])
+        #inner_mess.target_params.extend([RAN_parameter.GNB_ID, RAN_parameter.SOMETHING])
+        inner_mess.target_params.extend([RAN_parameter.GNB_ID])
         master_mess.ran_indication_request.CopyFrom(inner_mess)
         buf = master_mess.SerializeToString()
 
         xapp_control_ricbypass.sent_to_socket(buf)
+        r_buf = xapp_control_ricbypass.receive_from_socket()
+        ran_ind_resp = RAN_indication_response()
+        ran_ind_resp.ParseFromString(r_buf)
+        print(ran_ind_resp)
+
         exit()
 
     control_sck = open_control_socket(4200)

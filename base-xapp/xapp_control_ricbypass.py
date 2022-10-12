@@ -1,28 +1,42 @@
+from ast import Global
 import socket
 import socketserver
+import string
 
 localIP = "127.0.0.1"
-serverPort = 6655
+in_port = 6600
+out_port = 6655
 maxSize = 4096
 initialized = False
-UDPClientSocket = None
+UDPClientSocketOut = None
+UDPClientSocketIn = None
 
 def initialize():
-    global UDPClientSocket
-    UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-    #UDPClientSocket.bind((localIP, serverPort))
-    print("Control socket initialized")
+    global UDPClientSocketOut
+    global UDPClientSocketIn
+    global initialized
+    UDPClientSocketOut = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+    UDPClientSocketIn = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+    UDPClientSocketIn.bind(("", in_port))
+    print("Control sockets initialized")
+    initialized = True
 
 def receive_from_socket():
+    global initialized
+    global UDPClientSocketIn
+    print("receiving")
     if not initialized:
         initialize()
-    global UDPClientSocket
-    bytesAddressPair = UDPClientSocket.recvfrom(maxSize)
+    bytesAddressPair = UDPClientSocketIn.recvfrom(maxSize)
+    print("received {} bytes".format(len(bytesAddressPair[0])))
+    return bytesAddressPair[0]
 
 def sent_to_socket(data):
+    global UDPClientSocketOut
+    global initialized
     if not initialized:
         initialize()
-    global UDPClientSocket
-    UDPClientSocket.sendto(data, (localIP,serverPort))
+    global UDPClientSocketOut
+    UDPClientSocketOut.sendto(data, (localIP,out_port))
     
 

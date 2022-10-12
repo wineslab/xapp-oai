@@ -31,6 +31,13 @@ void signalHandler( int signum ) {
 
 int main(int argc, char *argv[]){
 
+
+	/*
+	first thing: wait for a udp datagram containing the buffer of a oai ric indication request 
+	to be sent each time the indication request fires (this buffer will be encoded in the sub req)
+	and saved and replayed in e2sim
+	*/
+
 	// Get the thread id
 	std::thread::id my_id = std::this_thread::get_id();
 	std::stringstream thread_id;
