@@ -37,6 +37,8 @@ int main(int argc, char *argv[]){
 	to be sent each time the indication request fires (this buffer will be encoded in the sub req)
 	and saved and replayed in e2sim
 	*/
+	fprintf(stdout, "xapp sm connector: waiting for initial ric indication request from control");
+	
 
 	// Get the thread id
 	std::thread::id my_id = std::this_thread::get_id();

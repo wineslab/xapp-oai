@@ -107,6 +107,7 @@ private:
   void handle_rx_msg_agent(std::string agent_ip);
   void handle_external_control_message(int port);
   void terminate_du_reporting(void);
+  int oneshot_external_control_message_udp(int port, char* buffer);
 
   XappRmr * rmr_ref;
   XappSettings * config_ref;

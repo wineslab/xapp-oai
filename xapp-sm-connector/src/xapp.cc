@@ -29,6 +29,8 @@
 std::map<string, int> agentIp_socket;
 std::map<std::string, std::string> agentIp_gnbId;
 std::vector<std::string> drl_agent_ip{AGENT_0};
+char* indreq_buf;
+int indreq_buflen;
 
  Xapp::Xapp(XappSettings &config, XappRmr &rmr){
 
@@ -99,6 +101,8 @@ void Xapp::startup(SubscriptionHandler &sub_ref) {
         std::cout << "Querying target gNB" << std::endl;
         rnib_gnblist.push_back(GNB_ID);
     }
+    int indreq_buflen = oneshot_external_control_message_udp(SOCKET_PORT_EXT, indreq_buf);
+    std::cout << "Initial indication request received, bytes: " << indreq_buflen << std::endl;
 
     // open external control socket in thread and wait for message
     ext_control_thr_rx = std::unique_ptr<std::thread>(new std::thread{&Xapp::handle_external_control_message, this, SOCKET_PORT_EXT});
@@ -298,6 +302,43 @@ void Xapp::handle_external_control_message(int port) {
   return;
 }
 
+// handle external control socket message
+int Xapp::oneshot_external_control_message_udp(int port, char* buffer) {
+
+    // Create a socket (IPv4, TCP)
+    int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd == -1) {
+        std::cout << "Failed to create socket. errno: " << errno << std::endl;
+        return;
+    }
+
+    // Listen on given port on any address
+    sockaddr_in sockaddr;
+    sockaddr.sin_family = AF_INET;
+    sockaddr.sin_addr.s_addr = INADDR_ANY;
+    sockaddr.sin_port = htons(port);
+
+    if (bind(sockfd, (struct sockaddr*)&sockaddr, sizeof(sockaddr)) < 0) {
+        std::cout << "Failed to bind to port. Errno: " << errno << std::endl;
+        return;
+    }
+
+    std::cout << "Opened control socket server on port " << port << std::endl;
+        // Read from the connection
+        const size_t max_size = 256;
+        buffer = calloc(max_size, sizeof(char));
+        auto slen = sizeof(sockaddr);
+        int revclen = recvfrom(sockfd, buffer, max_size, MSG_WAITALL, &sockaddr, &slen);
+        if(revclen < 0){
+            std::cout << "Error receiving message from conrol socket" << std::endl;
+        }
+        close(sockfd);
+        return revclen;
+  close(sockfd);
+
+  return;
+}
+
 
 // terminate all DU reportings and shutdown xApp
 void Xapp::terminate_du_reporting(void) {
@@ -439,11 +480,13 @@ void Xapp::startup_subscribe_requests(void ){
         int function_id = 0;
 
         // DU report timer in ms
-        std::string event_def = "250";
+        //std::string event_def = "250";
 
         din.set_request(request_id);
         din.set_function_id(function_id);
-        din.set_event_def(event_def.c_str(), event_def.length());
+        //din.set_event_def(event_def.c_str(), event_def.length());
+        // setting ind req buffer in request
+        din.set_event_def(indreq_buf, indreq_buflen);
 
         std::string act_def = "HelloWorld Action Definition";
 
