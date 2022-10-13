@@ -1,9 +1,12 @@
 import logging
+from os import lseek
 from xapp_control import *
 import xapp_control_ricbypass
 from  ran_messages_pb2 import *
+from time import sleep
+import socket
 
-BYPASS_RIC = True
+BYPASS_RIC = False
 
 def main():
     # configure logger and console output
@@ -40,8 +43,26 @@ def main():
         print(ran_ind_resp)
 
         exit()
+    waittime = 1
+    print("Will wait {} seconds for xapp-sm to start".format(waittime))
+    sleep(waittime)
+    print("encoding initial ric indication request")
+    master_mess = RAN_message()
+    master_mess.msg_type = RAN_message_type.INDICATION_REQUEST
+    inner_mess = RAN_indication_request()
+    inner_mess.target_params.extend([RAN_parameter.GNB_ID, RAN_parameter.SOMETHING])
+    #inner_mess.target_params.extend([RAN_parameter.GNB_ID])
+    master_mess.ran_indication_request.CopyFrom(inner_mess)
+    buf = master_mess.SerializeToString()
+    print(buf)
+
+    UDPClientSocketOut = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+    UDPClientSocketOut.sendto(buf, ("127.0.0.1",7000))
+
+    print("request sent, now waiting for incoming answers")
 
     control_sck = open_control_socket(4200)
+
 
     while True:
         logging.info("loop again")
@@ -55,8 +76,8 @@ def main():
                 break
         else:
             logging.info('Received data: ' + repr(data_sck))
-            logging.info("Sending something back")
-            send_socket(control_sck, "test test test")
+            #logging.info("Sending something back")
+            #send_socket(control_sck, "test test test")
 
 
 if __name__ == '__main__':

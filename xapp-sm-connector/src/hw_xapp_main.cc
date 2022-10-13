@@ -37,8 +37,7 @@ int main(int argc, char *argv[]){
 	to be sent each time the indication request fires (this buffer will be encoded in the sub req)
 	and saved and replayed in e2sim
 	*/
-	fprintf(stdout, "xapp sm connector: waiting for initial ric indication request from control");
-	
+	std::cout << "xapp sm connector: waiting for initial ric indication request from control" << std::endl;
 
 	// Get the thread id
 	std::thread::id my_id = std::this_thread::get_id();
@@ -63,7 +62,7 @@ int main(int argc, char *argv[]){
 	//getting the listening port and xapp name info
 	std::string  port = config[XappSettings::SettingName::HW_PORT];
 	std::string  name = config[XappSettings::SettingName::XAPP_NAME];
-
+	std::cout << "about to init rmr" << std::endl;
 	//initialize rmr
 	std::unique_ptr<XappRmr> rmr = std::make_unique<XappRmr>(port);
 	rmr->xapp_rmr_init(true);
@@ -74,6 +73,7 @@ int main(int argc, char *argv[]){
 
 	//create HelloWorld Xapp Instance.
 	std::unique_ptr<Xapp> hw_xapp;
+	std::cout << "about to make unique xapp" << std::endl;
 	hw_xapp = std::make_unique<Xapp>(std::ref(config),std::ref(*rmr));
 
 	mdclog_write(MDCLOG_INFO, "Created Hello World Xapp Instance");
@@ -90,6 +90,8 @@ int main(int argc, char *argv[]){
 	hw_xapp->start_xapp_receiver(std::ref(*mp_handler));
 
 	sleep(1);
+
+	std::cout << "about to call xapp startup" << std::endl;
 
 	hw_xapp->startup(std::ref(*sub_handler));
 

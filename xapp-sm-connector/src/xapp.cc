@@ -29,8 +29,6 @@
 std::map<string, int> agentIp_socket;
 std::map<std::string, std::string> agentIp_gnbId;
 std::vector<std::string> drl_agent_ip{AGENT_0};
-char* indreq_buf;
-int indreq_buflen;
 
  Xapp::Xapp(XappSettings &config, XappRmr &rmr){
 
@@ -91,6 +89,10 @@ void Xapp::startup(SubscriptionHandler &sub_ref) {
 
 	subhandler_ref = &sub_ref;
 
+    std::cout << "Still waiting for indreq buf..." << std::endl;
+    indreq_buflen = oneshot_external_control_message_udp(SOCKET_PORT_EXT, &indreq_buf);
+    std::cout << "Initial indication request received, bytes: " << indreq_buflen << std::endl;
+
     if (GNB_ID == "") {
         // get list of gnbs from ric
         std::cout << "Getting gNB list from RIC" << std::endl;
@@ -101,8 +103,7 @@ void Xapp::startup(SubscriptionHandler &sub_ref) {
         std::cout << "Querying target gNB" << std::endl;
         rnib_gnblist.push_back(GNB_ID);
     }
-    int indreq_buflen = oneshot_external_control_message_udp(SOCKET_PORT_EXT, indreq_buf);
-    std::cout << "Initial indication request received, bytes: " << indreq_buflen << std::endl;
+
 
     // open external control socket in thread and wait for message
     ext_control_thr_rx = std::unique_ptr<std::thread>(new std::thread{&Xapp::handle_external_control_message, this, SOCKET_PORT_EXT});
@@ -303,13 +304,13 @@ void Xapp::handle_external_control_message(int port) {
 }
 
 // handle external control socket message
-int Xapp::oneshot_external_control_message_udp(int port, char* buffer) {
+int Xapp::oneshot_external_control_message_udp(int port, char** buffer) {
 
     // Create a socket (IPv4, TCP)
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sockfd == -1) {
         std::cout << "Failed to create socket. errno: " << errno << std::endl;
-        return;
+        return 0;
     }
 
     // Listen on given port on any address
@@ -320,23 +321,21 @@ int Xapp::oneshot_external_control_message_udp(int port, char* buffer) {
 
     if (bind(sockfd, (struct sockaddr*)&sockaddr, sizeof(sockaddr)) < 0) {
         std::cout << "Failed to bind to port. Errno: " << errno << std::endl;
-        return;
+        return 0;
     }
 
     std::cout << "Opened control socket server on port " << port << std::endl;
-        // Read from the connection
-        const size_t max_size = 256;
-        buffer = calloc(max_size, sizeof(char));
-        auto slen = sizeof(sockaddr);
-        int revclen = recvfrom(sockfd, buffer, max_size, MSG_WAITALL, &sockaddr, &slen);
-        if(revclen < 0){
-            std::cout << "Error receiving message from conrol socket" << std::endl;
-        }
-        close(sockfd);
-        return revclen;
-  close(sockfd);
-
-  return;
+    // Read from the connection
+    const size_t max_size = 256;
+    *buffer = (char*) calloc(max_size, sizeof(char));
+    unsigned int slen = sizeof(sockaddr);
+    int revclen = recvfrom(sockfd, *buffer, max_size, MSG_WAITALL, ( struct sockaddr *) &sockaddr, &slen);
+    if(revclen < 0){
+        std::cout << "Error receiving message from conrol socket" << std::endl;
+    }
+    close(sockfd);
+    std::cout << "exiting oneshot receiver, received: " << revclen << std::endl;
+    return revclen;
 }
 
 
@@ -486,6 +485,12 @@ void Xapp::startup_subscribe_requests(void ){
         din.set_function_id(function_id);
         //din.set_event_def(event_def.c_str(), event_def.length());
         // setting ind req buffer in request
+        std::cout << "about to encode " << indreq_buflen << " bytes in det_event_def" << std::endl;
+        printf("about to print buffer\n");
+        for(int i=0; i<indreq_buflen; i++){
+            printf("---%hhx\n",indreq_buf[i]);
+        }
+        printf("\n");
         din.set_event_def(indreq_buf, indreq_buflen);
 
         std::string act_def = "HelloWorld Action Definition";
