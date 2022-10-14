@@ -184,7 +184,9 @@ void Xapp::handle_rx_msg(void) {
             int rcv_size = recv(control_sckfd, buf, max_size, 0);
             if (rcv_size > 0) {
                 std::cout << "Message from agent " << agent_ip << std::endl;
-                std::cout << buf << std::endl;
+
+               
+                //std::cout << buf << std::endl;
 
                 // get gnb_id from agent IP
                 std::map<std::string, std::string>::iterator it_gnb;
@@ -192,7 +194,8 @@ void Xapp::handle_rx_msg(void) {
 
                 // send RIC control request
                 if (it_gnb != agentIp_gnbId.end()) {
-                    send_ric_control_request(buf, it_gnb->second);
+                    //send_ric_control_request(buf, it_gnb->second);
+                    send_ric_control_request_withsize(buf, rcv_size ,it_gnb->second);
                 }
                 else {
                     std::cout << "ERROR: No gNB ID found for agent " << agent_ip << std::endl;
@@ -231,7 +234,8 @@ void Xapp::handle_rx_msg_agent(std::string agent_ip) {
 
                 // send RIC control request
                 if (it_gnb != agentIp_gnbId.end()) {
-                send_ric_control_request(buf, it_gnb->second);
+                //send_ric_control_request(buf, it_gnb->second);
+                send_ric_control_request_withsize(buf, rcv_size ,it_gnb->second);
                 }
                 else {
                 std::cout << "ERROR: No gNB ID found for agent " << agent_ip << std::endl;
@@ -410,6 +414,78 @@ void Xapp::send_ric_control_request(char* payload, std::string gnb_id) {
  	//};
 	const char* msg = payload;
 	din.control_msg_size = strlen(msg) + 1;
+	mdclog_write(MDCLOG_INFO, "Size of msg %d", din.control_msg_size);
+	din.control_msg = (uint8_t*) calloc(din.control_msg_size, sizeof(uint8_t));
+	std::memcpy(din.control_msg, msg, din.control_msg_size);
+ 	ric_control_helper dout {};
+
+ 	// control request object
+ 	ric_control_request ctrl_req {};
+ 	ric_control_request ctrl_recv {};
+
+ 	unsigned char buf[BUFFER_SIZE];
+    size_t buf_size = BUFFER_SIZE;
+
+ 	res = ctrl_req.encode_e2ap_control_request(&buf[0], &buf_size, din);
+
+ 	xapp_rmr_header rmr_header;
+	rmr_header.message_type = RIC_CONTROL_REQ;
+	rmr_header.payload_length = buf_size; //data_size
+	strcpy((char*)rmr_header.meid, gnb_id.c_str());
+
+	mdclog_write(MDCLOG_INFO, "Sending CTRL REQ in file= %s, line=%d for MEID %s", __FILE__, __LINE__, meid);
+
+    int result = rmr_ref->xapp_rmr_send(&rmr_header, (void*)buf);
+    if(result) {
+   	    mdclog_write(MDCLOG_INFO, "CTRL REQ SUCCESSFUL in file= %s, line=%d for MEID %s",__FILE__,__LINE__, meid);
+    }
+}
+
+void Xapp::send_ric_control_request_withsize(char* payload, int payload_size,std::string gnb_id) {
+  
+    std::cout << "Sending RIC Control Request" << std::endl;
+
+	bool res;
+	size_t data_size = ASN_BUFF_MAX_SIZE;
+	unsigned char	data[data_size];
+	unsigned char meid[RMR_MAX_MEID];
+	std::string xapp_id = config_ref->operator [](XappSettings::SettingName::XAPP_ID);
+
+	mdclog_write(MDCLOG_INFO, "Preparing to send control in file= %s, line=%d", __FILE__, __LINE__);
+
+    auto gnblist = get_rnib_gnblist();
+    int sz = gnblist.size();
+
+    if(sz <= 0) {
+	   mdclog_write(MDCLOG_INFO, "Subscriptions cannot be sent as GNBList in RNIB is NULL");
+        return;
+    }
+
+	// give the message to subscription handler, along with the transmitter.
+ 	strcpy((char*)meid, gnb_id.c_str());
+	std::cout << "RIC Control Request, gNB " << gnb_id << std::endl;
+
+ 	// helpers
+ 	// set fields randomly
+ 	ric_control_helper din {};
+       	//= {
+ 	//	1,
+ 	//	1,
+ 	//	0,
+ 	//	1,
+ 	//	-1,
+ 	//	0,
+ 	//	0,
+ 	//	1,
+ 	//	"test", // control_msg
+ 	//	5, // control_msg_size
+ 	//	"testh", // control header
+ 	//	6,
+ 	//	"testp", // call process id
+ 	//	6
+ 	//};
+	const char* msg = payload;
+	din.control_msg_size = payload_size;
 	mdclog_write(MDCLOG_INFO, "Size of msg %d", din.control_msg_size);
 	din.control_msg = (uint8_t*) calloc(din.control_msg_size, sizeof(uint8_t));
 	std::memcpy(din.control_msg, msg, din.control_msg_size);

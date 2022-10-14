@@ -101,6 +101,7 @@ private:
   void startup_subscribe_requests(void );
   void shutdown_subscribe_deletes(void);
   void send_ric_control_request(char* payload, std::string gnb_id);
+  void send_ric_control_request_withsize(char* payload, int payload_size, std::string gnb_id);
   void startup_get_policies(void );
 
   void handle_rx_msg(void);

@@ -5,6 +5,7 @@ import xapp_control_ricbypass
 from  ran_messages_pb2 import *
 from time import sleep
 import socket
+from random import randint
 
 BYPASS_RIC = False
 
@@ -81,6 +82,32 @@ def main():
             resp = RAN_indication_response()
             resp.ParseFromString(data_sck)
             print(resp)
+
+            print("Sending RIC indication control with random data")
+            master_mess = RAN_message()
+            master_mess.msg_type = RAN_message_type.CONTROL
+            inner_mess = RAN_control_request()
+
+            # gnb id control element 
+            gnb_id_control_element = RAN_param_map_entry()
+            gnb_id_control_element.key = RAN_parameter.GNB_ID
+            gnb_id_control_element.value = str(randint(1,10))
+
+            # something control element
+            something_control_element = RAN_param_map_entry()
+            something_control_element.key = RAN_parameter.SOMETHING
+            something_control_element.value = str(randint(1,10))
+
+            inner_mess.target_param_map.extend([gnb_id_control_element, something_control_element])
+            master_mess.ran_control_request.CopyFrom(inner_mess)
+
+            print("printing built control message:")
+            print(master_mess)
+
+            ctrl_buf = master_mess.SerializeToString()
+            send_socket(control_sck, ctrl_buf)
+            print("Message sent")
+
             #logging.info("Sending something back")
             #send_socket(control_sck, "test test test")
 

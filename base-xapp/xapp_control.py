@@ -22,7 +22,7 @@ def open_control_socket(port: int):
 
 # send through socket
 def send_socket(socket, msg: str):
-    bytes_num = socket.send(msg.encode('utf-8'))
+    bytes_num = socket.send(msg)#.encode('utf-8'))
     print('Socket sent ' + str(bytes_num) + ' bytes')
 
 
