@@ -33,19 +33,20 @@ def receive_from_socket(socket) -> str:
     ack = 'Indication ACK\n'
 
     data = socket.recv(4096)
-    try:
-        data = data.decode('utf-8')
-    except UnicodeDecodeError:
-        #print("unicode error")
-        return 'final decoding error'
 
-    if ack in data:
-        data = data[len(ack):]
+    #try:
+    #    data = data.decode('utf-8')
+    #except UnicodeDecodeError:
+    #    #print("unicode error")
+    #    return 'final decoding error'
+
+    #if ack in data:
+    #    data = data[len(ack):]
 
     if len(data) > 0:
-        print("Received: ", str(data))
+        print("Received ", len(data), " bytes")
 
-        return data.strip()
+        return data
     else:
         print("received 0 data")
         return ''

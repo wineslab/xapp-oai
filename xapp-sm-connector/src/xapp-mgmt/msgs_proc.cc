@@ -277,10 +277,10 @@ uint8_t procRicIndication(E2AP_PDU_t *e2apMsg, transaction_identifier gnb_id)
 					printf("Payload size: %d\n",payload_size);
 
 					// recasting and saving as a char
-					char payload[payload_size + 1];
+					//char payload[payload_size + 1];
 					for (int i = 0; i < payload_size; i++){
-						payload[i] = ricIndication->protocolIEs.list.array[idx]->value.choice.RICindicationMessage.buf[i];
-						//printf("%u", ricIndication->protocolIEs.list.array[idx]->value.choice.RICindicationMessage.buf[i]);
+						//payload[i] = ricIndication->protocolIEs.list.array[idx]->value.choice.RICindicationMessage.buf[i];
+						printf("%hhx", ricIndication->protocolIEs.list.array[idx]->value.choice.RICindicationMessage.buf[i]);
 					}
 
 					//printf("This is the payload from asn: ++++++++++%.*s---\n",\
@@ -290,13 +290,13 @@ uint8_t procRicIndication(E2AP_PDU_t *e2apMsg, transaction_identifier gnb_id)
 					//memcpy(payload, ricIndication->protocolIEs.list.array[idx]-> \
 																		 value.choice.RICindicationMessage.buf, payload_size);
 
-					printf("Payload %s\n", payload);
+					//printf("Payload %s\n", payload);
 
 					// send payload to agent
 					std::string agent_ip = find_agent_ip_from_gnb(gnb_id);
 					//send_socket(payload, agent_ip);
 					//send_socket( (char*) ricIndication->protocolIEs.list.array[idx]->value.choice.RICindicationMessage.buf, agent_ip);
-					send_socket_limited(payload, payload_size, agent_ip);
+					send_socket_limited(ricIndication->protocolIEs.list.array[idx]->value.choice.RICindicationMessage.buf, payload_size, agent_ip);
 					break;
 				}
       }

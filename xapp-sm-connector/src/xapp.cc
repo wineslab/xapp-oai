@@ -486,11 +486,13 @@ void Xapp::startup_subscribe_requests(void ){
         //din.set_event_def(event_def.c_str(), event_def.length());
         // setting ind req buffer in request
         std::cout << "about to encode " << indreq_buflen << " bytes in det_event_def" << std::endl;
+        /*
         printf("about to print buffer\n");
         for(int i=0; i<indreq_buflen; i++){
             printf("---%hhx\n",indreq_buf[i]);
         }
         printf("\n");
+        */
         din.set_event_def(indreq_buf, indreq_buflen);
 
         std::string act_def = "HelloWorld Action Definition";

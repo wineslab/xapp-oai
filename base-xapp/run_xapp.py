@@ -65,7 +65,7 @@ def main():
 
 
     while True:
-        logging.info("loop again")
+        #logging.info("loop again")
         data_sck = receive_from_socket(control_sck)
         if len(data_sck) <= 0:
             logging.info("leq 0 data")
@@ -75,7 +75,12 @@ def main():
                 logging.info('Negative value for socket')
                 break
         else:
-            logging.info('Received data: ' + repr(data_sck))
+            #logging.info('Received data: ' + repr(data_sck))
+            #print(data_sck)
+            print("Recevied RIC indication response:")
+            resp = RAN_indication_response()
+            resp.ParseFromString(data_sck)
+            print(resp)
             #logging.info("Sending something back")
             #send_socket(control_sck, "test test test")
 

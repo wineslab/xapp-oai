@@ -142,7 +142,7 @@ int send_socket(char* buf, std::string dest_ip) {
 }
 
 // send through socket with limited size
-int send_socket_limited(char* buf, int buflen, std::string dest_ip) {
+int send_socket_limited(uint8_t* buf, int buflen, std::string dest_ip) {
 
   int control_sckfd = -1;
   // get socket file descriptor
@@ -164,6 +164,11 @@ int send_socket_limited(char* buf, int buflen, std::string dest_ip) {
   // const size_t max_size = 512;
   // char buf[max_size] = "Hello, Server!";  // store the data in a buffer
   size_t data_size = (size_t) buflen;
+  std::cout << "printing buffer in send socket limited" << std::endl;
+  for(int i=0; i<=buflen; i++){
+    printf(" %hhx ", buf[i]); 
+  }
+  printf("\n");
   int sent_size = send(control_sckfd ,buf, data_size, 0);
 
   if(sent_size < 0) { // the send returns a size of -1 in case of errors
