@@ -2,7 +2,7 @@ import logging
 from xapp_control import *
 import xapp_control_ricbypass
 from  ran_messages_pb2 import *
-
+from time import sleep
 BYPASS_RIC = True
 
 def main():
@@ -33,6 +33,8 @@ def main():
             ran_ind_resp = RAN_indication_response()
             ran_ind_resp.ParseFromString(r_buf)
             print(ran_ind_resp)
+            sleep(1)
+            xapp_control_ricbypass.sent_to_socket(buf)
 
         r_buf = xapp_control_ricbypass.receive_from_socket()
         ran_ind_resp = RAN_indication_response()
