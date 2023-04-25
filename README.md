@@ -17,14 +17,14 @@ cd xapp-oai
 Then build the image:
 
 ```
-docker build -f Dockerfile -t xapp:mrn_base .
+docker build -f Dockerfile -t xapp_oai:mrn_base .
 ```
 
 If the build is successfull, you will see the built image with `docker images`
 
 Now start the container:
 ```
-docker run -dit --name xapp --net=host xapp:mrn_base
+docker run -dit --name xapp --net=host xapp_oai:mrn_base
 ```
 The xApps not start automatically. First connect a terminal to the running container:
 
