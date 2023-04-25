@@ -1,30 +1,20 @@
 import logging
 from xapp_control import *
 import xapp_control_ricbypass
-from  ran_messages_pb2 import *
+from e2sm_proto import *
 from time import sleep
-from rich.console import Console
-from rich.panel import Panel
-import multiprocessing
-
-BYPASS_RIC = True
 
 def main():
 
     rnti = input("Enter RNTI:")
     rnti = int(rnti)
 
-    is_GBR = input("Is GBR? (y/n)")
-    if is_GBR == "y":
-        is_GBR = True
+    prop_1 = input("Is prop_1 true? (y/n)")
+    if prop_1 == "y":
+        prop_1 = True
     else:
-        is_GBR = False
-
-    dl_gbr = input("Enter DL GBR in Mbps:")
-    tbs_dl_toapply = float(dl_gbr) / 8 * 1e3
-
-    ul_gbr = input("Enter UL BGR in Mbps:")
-    tbs_ul_toapply = float(ul_gbr) / 8 * 1e3
+        prop_1 = False
+    prop_2 = float(input("Enter prop_2 (float)"))
 
     print("Sending control message")
     master_mess = RAN_message()
@@ -37,14 +27,13 @@ def main():
     
     # ue list message 
     ue_list_message = ue_list_m()
-    ue_list_message.connected_ues = 1
+    ue_list_message.connected_ues = 1 # this will not be processed by the gnb, it can be anything
 
     # ue info message
     ue_info_message = ue_info_m()
     ue_info_message.rnti = rnti
-    ue_info_message.is_GBR = is_GBR
-    ue_info_message.tbs_dl_toapply = tbs_dl_toapply
-    ue_info_message.tbs_ul_toapply = tbs_ul_toapply
+    ue_info_message.prop_1 = prop_1
+    ue_info_message.prop_2 = prop_2
 
     # put info message into repeated field of ue list message
     ue_list_message.ue_info.extend([ue_info_message])
@@ -52,7 +41,7 @@ def main():
     # put ue_list_message into the value of the control map entry
     ue_list_control_element.ue_list.CopyFrom(ue_list_message)
 
-    # finalize
+    # finalize and send
     inner_mess.target_param_map.extend([ue_list_control_element])
     master_mess.ran_control_request.CopyFrom(inner_mess)
     print(master_mess)
