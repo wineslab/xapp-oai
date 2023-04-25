@@ -1,5 +1,3 @@
-import logging
-from xapp_control import *
 import xapp_control_ricbypass
 from e2sm_proto import *
 from time import sleep
