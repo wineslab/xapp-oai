@@ -1,9 +1,7 @@
 import logging
 from xapp_control import *
 import xapp_control_ricbypass
-from ran_messages_pb2 import *
-
-
+from e2sm_proto import *
 from time import sleep
 
 def main():    
