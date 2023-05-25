@@ -12,29 +12,35 @@ initialized_tx = False
 UDPClientSocketOut = None
 UDPClientSocketIn = None
 
+verbose = False
+
 def initialize_rx():
     global UDPClientSocketIn
     global initialized_rx
     UDPClientSocketIn = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
     UDPClientSocketIn.bind(("", in_port))
-    print("Input control socket initialized")
+    if verbose:
+        print("Input control socket initialized")
     initialized_rx = True
 
 def initialize_tx():
     global UDPClientSocketOut
     global initialized_tx
     UDPClientSocketOut = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-    print("Output control socket initialized")
+    if verbose:
+        print("Output control socket initialized")
     initialized_tx = True
 
 def receive_from_socket():
     global initialized
     global UDPClientSocketIn
-    print("receiving")
+    if verbose:
+        print("receiving")
     if not initialized_rx:
         initialize_rx()
     bytesAddressPair = UDPClientSocketIn.recvfrom(maxSize)
-    print("received {} bytes".format(len(bytesAddressPair[0])))
+    if verbose:
+        print("received {} bytes".format(len(bytesAddressPair[0])))
     return bytesAddressPair[0]
 
 def send_to_socket(data):
