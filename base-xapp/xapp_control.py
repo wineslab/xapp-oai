@@ -22,7 +22,7 @@ def open_control_socket(port: int):
 
 # send through socket
 def send_socket(socket, msg: str):
-    bytes_num = socket.send(msg.encode('utf-8'))
+    bytes_num = socket.send(msg)
     print('Socket sent ' + str(bytes_num) + ' bytes')
 
 
@@ -30,22 +30,12 @@ def send_socket(socket, msg: str):
 def receive_from_socket(socket) -> str:
 
     print("----------receive from socket called")
-    ack = 'Indication ACK\n'
 
     data = socket.recv(4096)
-    try:
-        data = data.decode('utf-8')
-    except UnicodeDecodeError:
-        #print("unicode error")
-        return 'final decoding error'
-
-    if ack in data:
-        data = data[len(ack):]
 
     if len(data) > 0:
         print("Received: ", str(data))
-
-        return data.strip()
+        return data
     else:
         print("received 0 data")
         return ''
