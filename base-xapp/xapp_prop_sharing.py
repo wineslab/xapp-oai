@@ -222,8 +222,8 @@ def append_ue_to_ue_list_m(ue_info_message, ue_list_message):
     ue_list_message.connected_ues = ue_list_message.connected_ues + 1
     ue_list_message.ue_info.extend([ue_info_message])
 
-
-
+def satisfy_most_ues():
+    pass
 
 if __name__ == '__main__':
     main()
