@@ -31,7 +31,7 @@ def receive_from_socket(socket) -> str:
 
     print("----------receive from socket called")
 
-    data = socket.recv(4096)
+    data = socket.recv(8192)
 
     if len(data) > 0:
         print("Received: ", str(data))
