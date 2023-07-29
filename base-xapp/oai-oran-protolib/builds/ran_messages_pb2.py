@@ -383,7 +383,7 @@ _UE_INFO_M = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='avg_prbs_dl', full_name='ue_info_m.avg_prbs_dl', index=7,
+      name='avg_prbs_dl', full_name='ue_info_m.avg_prbs_dl', index=12,
       number=13, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
@@ -418,7 +418,7 @@ _UE_INFO_M = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='avg_rsrp', full_name='ue_info_m.avg_rsrp', index=12,
+      name='avg_rsrp', full_name='ue_info_m.avg_rsrp', index=7,
       number=8, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
