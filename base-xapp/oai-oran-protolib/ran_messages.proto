@@ -1,0 +1,88 @@
+syntax = "proto2";
+
+enum RAN_message_type{
+    SUBSCRIPTION = 1;
+    INDICATION_REQUEST = 2;
+    INDICATION_RESPONSE = 3;
+    CONTROL = 4;
+    SOMETHING_ELSE = 5;
+} 
+
+enum RAN_parameter{
+    GNB_ID = 1;
+    SOMETHING = 2;
+    UE_LIST = 3;
+    SCHED_INFO_ = 4;
+    SCHED_CONTROL = 5;
+    MAX_PRB = 6;
+    USE_TRUE_GBR = 7;
+}
+
+message RAN_param_map_entry{
+    required RAN_parameter key = 1;
+    oneof value{
+        int64 int64_value  = 2;
+        string string_value = 3;
+        ue_list_m ue_list = 4;
+        bool bool_value = 5;
+    }
+}
+
+/* RAN SUBMESSAGES */
+message RAN_indication_request{
+    repeated RAN_parameter target_params = 1;
+}
+
+message RAN_indication_response{
+    repeated RAN_param_map_entry param_map = 1;
+}
+
+message RAN_control_request{
+    repeated RAN_param_map_entry target_param_map = 1;
+}
+
+/* MASTER RAN MESSAGE */
+
+message RAN_message{
+    required RAN_message_type msg_type = 1;
+    oneof payload{
+        RAN_indication_request ran_indication_request = 2;
+        RAN_indication_response ran_indication_response = 3;
+        RAN_control_request ran_control_request = 4;
+    }
+}
+
+/* SPECIFIC MESSAGES */
+
+message ue_info_m{
+    required int32 rnti=1;
+
+    optional float tbs_avg_dl=2;
+    optional float tbs_avg_ul=3;
+
+    optional float tbs_dl_toapply=4;
+    optional float tbs_ul_toapply=5;
+
+    optional bool is_GBR = 6; 
+
+    optional float dl_mac_buffer_occupation = 7;
+
+    optional float avg_prbs_dl = 13;
+    optional float avg_prbs_ul = 9;
+
+    optional int32 mcs = 10;
+
+    optional float avg_tbs_per_prb_dl = 11;
+    optional float avg_tbs_per_prb_ul = 12;
+
+    optional float avg_rsrp = 8;
+}
+
+message ue_list_m{
+  required int32 connected_ues = 1;
+  repeated ue_info_m ue_info = 2;
+}
+
+message sched_control_m{
+    optional int32 max_cell_allocable_prbs = 1;
+}
