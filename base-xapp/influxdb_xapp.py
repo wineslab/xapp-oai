@@ -86,7 +86,7 @@ def main():
                 print(ue)
                 try:
 
-                    rsrp = ue.rsrp
+                    rsrp = ue.avg_rsrp
                     print("RSRP: " + str(rsrp))
                     rnti = ue.rnti
                     mcs = ue.mcs
