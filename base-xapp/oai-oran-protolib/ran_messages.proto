@@ -72,8 +72,8 @@ message ue_info_m{
 
     optional int32 mcs = 10;
 
-    optional float avg_tbs_per_prb_dl = 11;
-    optional float avg_rsrp = 12;
+    optional float avg_rsrp = 11;
+    optional float avg_tbs_per_prb_ul = 12;
 }
 
 message ue_list_m{
