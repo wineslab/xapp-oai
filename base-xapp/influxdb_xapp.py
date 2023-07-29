@@ -86,6 +86,8 @@ def main():
                 print(ue)
                 try:
 
+                    rsrp = ue.rsrp
+                    print("RSRP: " + str(rsrp))
                     rnti = ue.rnti
                     mcs = ue.mcs
                     dl_buffer = ue.dl_mac_buffer_occupation
