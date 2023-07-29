@@ -158,14 +158,12 @@ struct  _UeInfoM
   int32_t mcs;
   protobuf_c_boolean has_avg_tbs_per_prb_dl;
   float avg_tbs_per_prb_dl;
-  protobuf_c_boolean has_avg_tbs_per_prb_ul;
-  float avg_tbs_per_prb_ul;
   protobuf_c_boolean has_avg_rsrp;
   float avg_rsrp;
 };
 #define UE_INFO_M__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&ue_info_m__descriptor) \
-    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 
 
 struct  _UeListM

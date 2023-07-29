@@ -648,7 +648,7 @@ const ProtobufCMessageDescriptor ran_message__descriptor =
   (ProtobufCMessageInit) ran_message__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor ue_info_m__field_descriptors[13] =
+static const ProtobufCFieldDescriptor ue_info_m__field_descriptors[12] =
 {
   {
     "rnti",
@@ -783,20 +783,8 @@ static const ProtobufCFieldDescriptor ue_info_m__field_descriptors[13] =
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "avg_tbs_per_prb_ul",
-    12,
-    PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_FLOAT,
-    offsetof(UeInfoM, has_avg_tbs_per_prb_ul),
-    offsetof(UeInfoM, avg_tbs_per_prb_ul),
-    NULL,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-  {
     "avg_rsrp",
-    13,
+    12,
     PROTOBUF_C_LABEL_OPTIONAL,
     PROTOBUF_C_TYPE_FLOAT,
     offsetof(UeInfoM, has_avg_rsrp),
@@ -810,9 +798,8 @@ static const ProtobufCFieldDescriptor ue_info_m__field_descriptors[13] =
 static const unsigned ue_info_m__field_indices_by_name[] = {
   7,   /* field[7] = avg_prbs_dl */
   8,   /* field[8] = avg_prbs_ul */
-  12,   /* field[12] = avg_rsrp */
+  11,   /* field[11] = avg_rsrp */
   10,   /* field[10] = avg_tbs_per_prb_dl */
-  11,   /* field[11] = avg_tbs_per_prb_ul */
   6,   /* field[6] = dl_mac_buffer_occupation */
   5,   /* field[5] = is_GBR */
   9,   /* field[9] = mcs */
@@ -825,7 +812,7 @@ static const unsigned ue_info_m__field_indices_by_name[] = {
 static const ProtobufCIntRange ue_info_m__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 13 }
+  { 0, 12 }
 };
 const ProtobufCMessageDescriptor ue_info_m__descriptor =
 {
@@ -835,7 +822,7 @@ const ProtobufCMessageDescriptor ue_info_m__descriptor =
   "UeInfoM",
   "",
   sizeof(UeInfoM),
-  13,
+  12,
   ue_info_m__field_descriptors,
   ue_info_m__field_indices_by_name,
   1,  ue_info_m__number_ranges,
