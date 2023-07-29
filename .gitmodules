@@ -1,3 +1,0 @@
-[submodule "base-xapp/oai-oran-protolib"]
-	path = base-xapp/oai-oran-protolib
-	url = https://github.com/wineslab/oai-oran-protolib.git
