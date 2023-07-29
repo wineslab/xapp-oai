@@ -67,7 +67,7 @@ message ue_info_m{
 
     optional float dl_mac_buffer_occupation = 7;
 
-    optional float avg_prbs_dl = 13;
+    optional float avg_prbs_dl = 8;
     optional float avg_prbs_ul = 9;
 
     optional int32 mcs = 10;
@@ -75,7 +75,7 @@ message ue_info_m{
     optional float avg_tbs_per_prb_dl = 11;
     optional float avg_tbs_per_prb_ul = 12;
 
-    optional float avg_rsrp = 8;
+    optional float avg_rsrp = 13;
 }
 
 message ue_list_m{

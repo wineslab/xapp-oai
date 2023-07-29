@@ -735,12 +735,12 @@ static const ProtobufCFieldDescriptor ue_info_m__field_descriptors[13] =
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "avg_rsrp",
+    "avg_prbs_dl",
     8,
     PROTOBUF_C_LABEL_OPTIONAL,
     PROTOBUF_C_TYPE_FLOAT,
-    offsetof(UeInfoM, has_avg_rsrp),
-    offsetof(UeInfoM, avg_rsrp),
+    offsetof(UeInfoM, has_avg_prbs_dl),
+    offsetof(UeInfoM, avg_prbs_dl),
     NULL,
     NULL,
     0,             /* flags */
@@ -795,12 +795,12 @@ static const ProtobufCFieldDescriptor ue_info_m__field_descriptors[13] =
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "avg_prbs_dl",
+    "avg_rsrp",
     13,
     PROTOBUF_C_LABEL_OPTIONAL,
     PROTOBUF_C_TYPE_FLOAT,
-    offsetof(UeInfoM, has_avg_prbs_dl),
-    offsetof(UeInfoM, avg_prbs_dl),
+    offsetof(UeInfoM, has_avg_rsrp),
+    offsetof(UeInfoM, avg_rsrp),
     NULL,
     NULL,
     0,             /* flags */
@@ -808,9 +808,9 @@ static const ProtobufCFieldDescriptor ue_info_m__field_descriptors[13] =
   },
 };
 static const unsigned ue_info_m__field_indices_by_name[] = {
-  12,   /* field[12] = avg_prbs_dl */
+  7,   /* field[7] = avg_prbs_dl */
   8,   /* field[8] = avg_prbs_ul */
-  7,   /* field[7] = avg_rsrp */
+  12,   /* field[12] = avg_rsrp */
   10,   /* field[10] = avg_tbs_per_prb_dl */
   11,   /* field[11] = avg_tbs_per_prb_ul */
   6,   /* field[6] = dl_mac_buffer_occupation */
