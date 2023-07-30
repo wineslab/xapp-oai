@@ -162,10 +162,30 @@ struct  _UeInfoM
   float avg_tbs_per_prb_ul;
   protobuf_c_boolean has_avg_rsrp;
   float avg_rsrp;
+  protobuf_c_boolean has_ph;
+  float ph;
+  protobuf_c_boolean has_pcmax;
+  float pcmax;
+  protobuf_c_boolean has_dl_total_bytes;
+  float dl_total_bytes;
+  protobuf_c_boolean has_dl_errors;
+  float dl_errors;
+  protobuf_c_boolean has_dl_bler;
+  float dl_bler;
+  protobuf_c_boolean has_dl_mcs;
+  float dl_mcs;
+  protobuf_c_boolean has_ul_total_bytes;
+  float ul_total_bytes;
+  protobuf_c_boolean has_ul_errors;
+  float ul_errors;
+  protobuf_c_boolean has_ul_bler;
+  float ul_bler;
+  protobuf_c_boolean has_ul_mcs;
+  float ul_mcs;
 };
 #define UE_INFO_M__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&ue_info_m__descriptor) \
-    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+    , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 
 
 struct  _UeListM

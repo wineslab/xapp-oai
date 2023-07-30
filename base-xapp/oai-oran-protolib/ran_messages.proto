@@ -76,6 +76,19 @@ message ue_info_m{
     optional float avg_tbs_per_prb_ul = 12;
 
     optional float avg_rsrp = 13;
+    optional float ph = 14;
+    optional float pcmax = 15;
+
+    optional float dl_total_bytes = 16;
+    optional float dl_errors = 17;
+    optional float dl_bler = 18;
+    optional float dl_mcs = 19;
+    
+    optional float ul_total_bytes = 20;
+    optional float ul_errors = 21;
+    optional float ul_bler = 22;
+    optional float ul_mcs = 23;
+
 }
 
 message ue_list_m{

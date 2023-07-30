@@ -648,7 +648,7 @@ const ProtobufCMessageDescriptor ran_message__descriptor =
   (ProtobufCMessageInit) ran_message__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor ue_info_m__field_descriptors[13] =
+static const ProtobufCFieldDescriptor ue_info_m__field_descriptors[23] =
 {
   {
     "rnti",
@@ -806,6 +806,126 @@ static const ProtobufCFieldDescriptor ue_info_m__field_descriptors[13] =
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
+  {
+    "ph",
+    14,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_FLOAT,
+    offsetof(UeInfoM, has_ph),
+    offsetof(UeInfoM, ph),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "pcmax",
+    15,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_FLOAT,
+    offsetof(UeInfoM, has_pcmax),
+    offsetof(UeInfoM, pcmax),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "dl_total_bytes",
+    16,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_FLOAT,
+    offsetof(UeInfoM, has_dl_total_bytes),
+    offsetof(UeInfoM, dl_total_bytes),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "dl_errors",
+    17,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_FLOAT,
+    offsetof(UeInfoM, has_dl_errors),
+    offsetof(UeInfoM, dl_errors),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "dl_bler",
+    18,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_FLOAT,
+    offsetof(UeInfoM, has_dl_bler),
+    offsetof(UeInfoM, dl_bler),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "dl_mcs",
+    19,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_FLOAT,
+    offsetof(UeInfoM, has_dl_mcs),
+    offsetof(UeInfoM, dl_mcs),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "ul_total_bytes",
+    20,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_FLOAT,
+    offsetof(UeInfoM, has_ul_total_bytes),
+    offsetof(UeInfoM, ul_total_bytes),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "ul_errors",
+    21,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_FLOAT,
+    offsetof(UeInfoM, has_ul_errors),
+    offsetof(UeInfoM, ul_errors),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "ul_bler",
+    22,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_FLOAT,
+    offsetof(UeInfoM, has_ul_bler),
+    offsetof(UeInfoM, ul_bler),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "ul_mcs",
+    23,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_FLOAT,
+    offsetof(UeInfoM, has_ul_mcs),
+    offsetof(UeInfoM, ul_mcs),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
 };
 static const unsigned ue_info_m__field_indices_by_name[] = {
   7,   /* field[7] = avg_prbs_dl */
@@ -813,19 +933,29 @@ static const unsigned ue_info_m__field_indices_by_name[] = {
   12,   /* field[12] = avg_rsrp */
   10,   /* field[10] = avg_tbs_per_prb_dl */
   11,   /* field[11] = avg_tbs_per_prb_ul */
+  17,   /* field[17] = dl_bler */
+  16,   /* field[16] = dl_errors */
   6,   /* field[6] = dl_mac_buffer_occupation */
+  18,   /* field[18] = dl_mcs */
+  15,   /* field[15] = dl_total_bytes */
   5,   /* field[5] = is_GBR */
   9,   /* field[9] = mcs */
+  14,   /* field[14] = pcmax */
+  13,   /* field[13] = ph */
   0,   /* field[0] = rnti */
   1,   /* field[1] = tbs_avg_dl */
   2,   /* field[2] = tbs_avg_ul */
   3,   /* field[3] = tbs_dl_toapply */
   4,   /* field[4] = tbs_ul_toapply */
+  21,   /* field[21] = ul_bler */
+  20,   /* field[20] = ul_errors */
+  22,   /* field[22] = ul_mcs */
+  19,   /* field[19] = ul_total_bytes */
 };
 static const ProtobufCIntRange ue_info_m__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 13 }
+  { 0, 23 }
 };
 const ProtobufCMessageDescriptor ue_info_m__descriptor =
 {
@@ -835,7 +965,7 @@ const ProtobufCMessageDescriptor ue_info_m__descriptor =
   "UeInfoM",
   "",
   sizeof(UeInfoM),
-  13,
+  23,
   ue_info_m__field_descriptors,
   ue_info_m__field_indices_by_name,
   1,  ue_info_m__number_ranges,
