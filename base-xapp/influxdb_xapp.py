@@ -3,7 +3,7 @@ from os import lseek
 from xapp_control import *
 import xapp_control_ricbypass
 from  ran_messages_pb2 import *
-from time import sleep
+from time import sleep, time
 import socket
 from random import randint
 
@@ -85,7 +85,8 @@ def main():
             for idx, ue in enumerate(ue_info_list):
                 print(ue)
                 try:
-
+                    
+                    timestamp = time()
                     rnti = ue.rnti
                     avg_rsrp = ue.avg_rsrp
                     ph = ue.ph
@@ -99,7 +100,7 @@ def main():
                     ul_bler = ue.ul_bler
                     ul_mcs = ue.ul_mcs
 
-                    p = Point("xapp-stats").tag("rnti", rnti).field("avg_rsrp", avg_rsrp).field("ph", ph).field("pcmax", pcmax)\
+                    p = Point("xapp-stats").tag("rnti", rnti).field("timestamp", timestamp).field("avg_rsrp", avg_rsrp).field("ph", ph).field("pcmax", pcmax)\
                             .field("dl_total_bytes", dl_total_bytes).field("dl_errors", dl_errors).field("dl_bler", dl_bler).field("dl_mcs", dl_mcs)\
                             .field("ul_total_bytes", ul_total_bytes).field("ul_errors", ul_errors).field("ul_bler", ul_bler).field("ul_mcs", ul_mcs)
                     print(p)
