@@ -49,7 +49,7 @@ def main():
     print(buf)
 
     UDPClientSocketOut = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-    UDPClientSocketOut.sendto(buf, ("127.0.0.1",7000))
+    UDPClientSocketOut.sendto(buf, ("127.0.0.1",7001))
 
     print("request sent, now waiting for incoming answers")
 
