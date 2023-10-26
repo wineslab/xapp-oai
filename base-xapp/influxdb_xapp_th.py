@@ -80,8 +80,8 @@ def main():
             # check if there's any ue connected
             if len(ue_info_list) == 0:
                 print("\t---------")
-                print("\tNo ues connected, sleeping {}s".format(NO_UE_SLEEP_INTERVAL_S))
-                print("")
+                print("\tNo ues connected, sleeping 1s")
+                sleep(1)
                 continue
 
             for idx, ue in enumerate(ue_info_list):
