@@ -1,9 +1,5 @@
-from ast import Global
 import socket
-import socketserver
-import string
 
-localIP = "127.0.0.1"
 in_port = 6600
 out_port = 6655
 maxSize = 4096
@@ -27,22 +23,28 @@ def initialize_tx():
     print("Output control socket initialized")
     initialized_tx = True
 
-def receive_from_socket():
+def receive_from_socket(timeout=1):
     global initialized
     global UDPClientSocketIn
     print("receiving")
     if not initialized_rx:
         initialize_rx()
-    bytesAddressPair = UDPClientSocketIn.recvfrom(maxSize)
-    print("received {} bytes".format(len(bytesAddressPair[0])))
-    return bytesAddressPair[0]
+    UDPClientSocketIn.settimeout(timeout)
+    try:
+        bytesAddressPair = UDPClientSocketIn.recvfrom(maxSize)
+        print("received {} bytes".format(len(bytesAddressPair[0])))
+        return bytesAddressPair[0]
+    except socket.timeout:
+        print("Timeout waiting for data from socket")
+        return None
 
-def send_to_socket(data):
+
+def send_to_socket(data, ip):
     global UDPClientSocketOut
     global initialized
     if not initialized_tx:
         initialize_tx()
     global UDPClientSocketOut
-    UDPClientSocketOut.sendto(data, (localIP,out_port))
+    UDPClientSocketOut.sendto(data, (ip, out_port))
     
 
