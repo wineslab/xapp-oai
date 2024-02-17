@@ -7,7 +7,7 @@ BYPASS_RIC = True
 
 def main():
     # configure logger and console output
-    logging.basicConfig(level=logging.DEBUG, filename='/home/xapp-logger.log', filemode='a+',
+    logging.basicConfig(level=logging.DEBUG, filename='xapp-logger.log', filemode='a+',
                         format='%(asctime)-15s %(levelname)-8s %(message)s')
     formatter = logging.Formatter('%(asctime)-15s %(levelname)-8s %(message)s')
     console = logging.StreamHandler()
@@ -35,13 +35,6 @@ def main():
             print(ran_ind_resp)
             sleep(1)
             xapp_control_ricbypass.send_to_socket(buf)
-
-        r_buf = xapp_control_ricbypass.receive_from_socket()
-        ran_ind_resp = RAN_indication_response()
-        ran_ind_resp.ParseFromString(r_buf)
-        print(ran_ind_resp)
-
-        exit()
 
     control_sck = open_control_socket(4200)
 

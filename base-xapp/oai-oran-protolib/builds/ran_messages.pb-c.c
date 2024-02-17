@@ -367,7 +367,52 @@ void   sched_control_m__free_unpacked
   assert(message->base.descriptor == &sched_control_m__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
-static const ProtobufCFieldDescriptor ran_param_map_entry__field_descriptors[5] =
+void   slicing_control_m__init
+                     (SlicingControlM         *message)
+{
+  static const SlicingControlM init_value = SLICING_CONTROL_M__INIT;
+  *message = init_value;
+}
+size_t slicing_control_m__get_packed_size
+                     (const SlicingControlM *message)
+{
+  assert(message->base.descriptor == &slicing_control_m__descriptor);
+  return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
+}
+size_t slicing_control_m__pack
+                     (const SlicingControlM *message,
+                      uint8_t       *out)
+{
+  assert(message->base.descriptor == &slicing_control_m__descriptor);
+  return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
+}
+size_t slicing_control_m__pack_to_buffer
+                     (const SlicingControlM *message,
+                      ProtobufCBuffer *buffer)
+{
+  assert(message->base.descriptor == &slicing_control_m__descriptor);
+  return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
+}
+SlicingControlM *
+       slicing_control_m__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data)
+{
+  return (SlicingControlM *)
+     protobuf_c_message_unpack (&slicing_control_m__descriptor,
+                                allocator, len, data);
+}
+void   slicing_control_m__free_unpacked
+                     (SlicingControlM *message,
+                      ProtobufCAllocator *allocator)
+{
+  if(!message)
+    return;
+  assert(message->base.descriptor == &slicing_control_m__descriptor);
+  protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
+}
+static const ProtobufCFieldDescriptor ran_param_map_entry__field_descriptors[7] =
 {
   {
     "key",
@@ -390,7 +435,7 @@ static const ProtobufCFieldDescriptor ran_param_map_entry__field_descriptors[5] 
     offsetof(RANParamMapEntry, int64_value),
     NULL,
     NULL,
-    0 | PROTOBUF_C_FIELD_FLAG_ONEOF,             /* flags */
+    PROTOBUF_C_FIELD_FLAG_ONEOF,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
@@ -402,45 +447,71 @@ static const ProtobufCFieldDescriptor ran_param_map_entry__field_descriptors[5] 
     offsetof(RANParamMapEntry, string_value),
     NULL,
     NULL,
-    0 | PROTOBUF_C_FIELD_FLAG_ONEOF,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-  {
-    "ue_list",
-    4,
-    PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_MESSAGE,
-    offsetof(RANParamMapEntry, value_case),
-    offsetof(RANParamMapEntry, ue_list),
-    &ue_list_m__descriptor,
-    NULL,
-    0 | PROTOBUF_C_FIELD_FLAG_ONEOF,             /* flags */
+    PROTOBUF_C_FIELD_FLAG_ONEOF,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
     "bool_value",
-    5,
+    4,
     PROTOBUF_C_LABEL_OPTIONAL,
     PROTOBUF_C_TYPE_BOOL,
     offsetof(RANParamMapEntry, value_case),
     offsetof(RANParamMapEntry, bool_value),
     NULL,
     NULL,
-    0 | PROTOBUF_C_FIELD_FLAG_ONEOF,             /* flags */
+    PROTOBUF_C_FIELD_FLAG_ONEOF,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "ue_list",
+    5,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_MESSAGE,
+    offsetof(RANParamMapEntry, value_case),
+    offsetof(RANParamMapEntry, ue_list),
+    &ue_list_m__descriptor,
+    NULL,
+    PROTOBUF_C_FIELD_FLAG_ONEOF,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "sche_ctrl",
+    6,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_MESSAGE,
+    offsetof(RANParamMapEntry, value_case),
+    offsetof(RANParamMapEntry, sche_ctrl),
+    &sched_control_m__descriptor,
+    NULL,
+    PROTOBUF_C_FIELD_FLAG_ONEOF,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "slicing_ctrl",
+    7,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_MESSAGE,
+    offsetof(RANParamMapEntry, value_case),
+    offsetof(RANParamMapEntry, slicing_ctrl),
+    &slicing_control_m__descriptor,
+    NULL,
+    PROTOBUF_C_FIELD_FLAG_ONEOF,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
 };
 static const unsigned ran_param_map_entry__field_indices_by_name[] = {
-  4,   /* field[4] = bool_value */
+  3,   /* field[3] = bool_value */
   1,   /* field[1] = int64_value */
   0,   /* field[0] = key */
+  5,   /* field[5] = sche_ctrl */
+  6,   /* field[6] = slicing_ctrl */
   2,   /* field[2] = string_value */
-  3,   /* field[3] = ue_list */
+  4,   /* field[4] = ue_list */
 };
 static const ProtobufCIntRange ran_param_map_entry__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 5 }
+  { 0, 7 }
 };
 const ProtobufCMessageDescriptor ran_param_map_entry__descriptor =
 {
@@ -450,7 +521,7 @@ const ProtobufCMessageDescriptor ran_param_map_entry__descriptor =
   "RANParamMapEntry",
   "",
   sizeof(RANParamMapEntry),
-  5,
+  7,
   ran_param_map_entry__field_descriptors,
   ran_param_map_entry__field_indices_by_name,
   1,  ran_param_map_entry__number_ranges,
@@ -594,7 +665,7 @@ static const ProtobufCFieldDescriptor ran_message__field_descriptors[4] =
     offsetof(RANMessage, ran_indication_request),
     &ran_indication_request__descriptor,
     NULL,
-    0 | PROTOBUF_C_FIELD_FLAG_ONEOF,             /* flags */
+    PROTOBUF_C_FIELD_FLAG_ONEOF,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
@@ -606,7 +677,7 @@ static const ProtobufCFieldDescriptor ran_message__field_descriptors[4] =
     offsetof(RANMessage, ran_indication_response),
     &ran_indication_response__descriptor,
     NULL,
-    0 | PROTOBUF_C_FIELD_FLAG_ONEOF,             /* flags */
+    PROTOBUF_C_FIELD_FLAG_ONEOF,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
@@ -618,7 +689,7 @@ static const ProtobufCFieldDescriptor ran_message__field_descriptors[4] =
     offsetof(RANMessage, ran_control_request),
     &ran_control_request__descriptor,
     NULL,
-    0 | PROTOBUF_C_FIELD_FLAG_ONEOF,             /* flags */
+    PROTOBUF_C_FIELD_FLAG_ONEOF,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
 };
@@ -1061,6 +1132,83 @@ const ProtobufCMessageDescriptor sched_control_m__descriptor =
   (ProtobufCMessageInit) sched_control_m__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
+static const ProtobufCFieldDescriptor slicing_control_m__field_descriptors[4] =
+{
+  {
+    "sst",
+    1,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(SlicingControlM, sst),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "sd",
+    2,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_INT32,
+    offsetof(SlicingControlM, has_sd),
+    offsetof(SlicingControlM, sd),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "min_ratio",
+    3,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(SlicingControlM, min_ratio),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "max_ratio",
+    4,
+    PROTOBUF_C_LABEL_REQUIRED,
+    PROTOBUF_C_TYPE_INT32,
+    0,   /* quantifier_offset */
+    offsetof(SlicingControlM, max_ratio),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+};
+static const unsigned slicing_control_m__field_indices_by_name[] = {
+  3,   /* field[3] = max_ratio */
+  2,   /* field[2] = min_ratio */
+  1,   /* field[1] = sd */
+  0,   /* field[0] = sst */
+};
+static const ProtobufCIntRange slicing_control_m__number_ranges[1 + 1] =
+{
+  { 1, 0 },
+  { 0, 4 }
+};
+const ProtobufCMessageDescriptor slicing_control_m__descriptor =
+{
+  PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
+  "slicing_control_m",
+  "SlicingControlM",
+  "SlicingControlM",
+  "",
+  sizeof(SlicingControlM),
+  4,
+  slicing_control_m__field_descriptors,
+  slicing_control_m__field_indices_by_name,
+  1,  slicing_control_m__number_ranges,
+  (ProtobufCMessageInit) slicing_control_m__init,
+  NULL,NULL,NULL    /* reserved[123] */
+};
 static const ProtobufCEnumValue ran_message_type__enum_values_by_number[5] =
 {
   { "SUBSCRIPTION", "RAN_MESSAGE_TYPE__SUBSCRIPTION", 1 },
@@ -1095,7 +1243,7 @@ const ProtobufCEnumDescriptor ran_message_type__descriptor =
   ran_message_type__value_ranges,
   NULL,NULL,NULL,NULL   /* reserved[1234] */
 };
-static const ProtobufCEnumValue ran_parameter__enum_values_by_number[7] =
+static const ProtobufCEnumValue ran_parameter__enum_values_by_number[8] =
 {
   { "GNB_ID", "RAN_PARAMETER__GNB_ID", 1 },
   { "SOMETHING", "RAN_PARAMETER__SOMETHING", 2 },
@@ -1104,16 +1252,18 @@ static const ProtobufCEnumValue ran_parameter__enum_values_by_number[7] =
   { "SCHED_CONTROL", "RAN_PARAMETER__SCHED_CONTROL", 5 },
   { "MAX_PRB", "RAN_PARAMETER__MAX_PRB", 6 },
   { "USE_TRUE_GBR", "RAN_PARAMETER__USE_TRUE_GBR", 7 },
+  { "SLICING_CONTROL", "RAN_PARAMETER__SLICING_CONTROL", 8 },
 };
 static const ProtobufCIntRange ran_parameter__value_ranges[] = {
-{1, 0},{0, 7}
+{1, 0},{0, 8}
 };
-static const ProtobufCEnumValueIndex ran_parameter__enum_values_by_name[7] =
+static const ProtobufCEnumValueIndex ran_parameter__enum_values_by_name[8] =
 {
   { "GNB_ID", 0 },
   { "MAX_PRB", 5 },
   { "SCHED_CONTROL", 4 },
   { "SCHED_INFO_", 3 },
+  { "SLICING_CONTROL", 7 },
   { "SOMETHING", 1 },
   { "UE_LIST", 2 },
   { "USE_TRUE_GBR", 6 },
@@ -1125,9 +1275,9 @@ const ProtobufCEnumDescriptor ran_parameter__descriptor =
   "RAN_parameter",
   "RANParameter",
   "",
-  7,
+  8,
   ran_parameter__enum_values_by_number,
-  7,
+  8,
   ran_parameter__enum_values_by_name,
   1,
   ran_parameter__value_ranges,

@@ -16,15 +16,18 @@ enum RAN_parameter{
     SCHED_CONTROL = 5;
     MAX_PRB = 6;
     USE_TRUE_GBR = 7;
+    SLICING_CONTROL = 8;
 }
 
 message RAN_param_map_entry{
     required RAN_parameter key = 1;
     oneof value{
-        int64 int64_value  = 2;
+        int64 int64_value   = 2;
         string string_value = 3;
-        ue_list_m ue_list = 4;
-        bool bool_value = 5;
+        bool bool_value     = 4;
+        ue_list_m ue_list   = 5;
+        sched_control_m sche_ctrl     = 6;
+        slicing_control_m slicing_ctrl   = 7;
     }
 }
 
@@ -98,4 +101,11 @@ message ue_list_m{
 
 message sched_control_m{
     optional int32 max_cell_allocable_prbs = 1;
+}
+
+message slicing_control_m{
+    required int32 sst = 1;
+    optional int32 sd = 2;
+    required int32 min_ratio = 3;
+    required int32 max_ratio = 4;
 }
