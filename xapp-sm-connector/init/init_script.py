@@ -93,8 +93,8 @@ ParseSection["messaging"] = getMessagingInfo;
 if __name__ == "__main__":
 
     import subprocess;
-#    cmd = ["../src/hw_xapp_main"];
-    cmd = ["/usr/local/bin/hw_xapp_main"];
+    cmd = ["/root/xapp/src/hw_xapp_main"];
+    #cmd = ["/usr/local/bin/hw_xapp_main"];
         
     if len(sys.argv) > 1:
         config_file = sys.argv[1];
