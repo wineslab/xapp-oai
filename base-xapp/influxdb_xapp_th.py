@@ -2,7 +2,9 @@ import logging
 from os import lseek
 from xapp_control import *
 import xapp_control_ricbypass
-from  ran_messages_pb2 import *
+# from  ran_messages_pb2 import *
+import importlib
+ran_messages_pb2 = importlib.import_module("oai-oran-protolib.builds.ran_messages_pb2")
 from time import sleep, time
 import socket
 from random import randint
@@ -15,10 +17,10 @@ BYPASS_RIC = False
 
 def trigger_indication():
     print("encoding sub request")
-    master_mess = RAN_message()
-    master_mess.msg_type = RAN_message_type.INDICATION_REQUEST
-    inner_mess = RAN_indication_request()
-    inner_mess.target_params.extend([RAN_parameter.GNB_ID, RAN_parameter.UE_LIST])
+    master_mess = ran_messages_pb2.RAN_message()
+    master_mess.msg_type = ran_messages_pb2.RAN_message_type.INDICATION_REQUEST
+    inner_mess = ran_messages_pb2.RAN_indication_request()
+    inner_mess.target_params.extend([ran_messages_pb2.RAN_parameter.GNB_ID, ran_messages_pb2.RAN_parameter.UE_LIST])
     #inner_mess.target_params.extend([RAN_parameter.GNB_ID])
     master_mess.ran_indication_request.CopyFrom(inner_mess)
     buf = master_mess.SerializeToString()
@@ -63,7 +65,7 @@ def main():
             #logging.info('Received data: ' + repr(data_sck))
             #print(data_sck)
             print("RIC report received")
-            resp = RAN_indication_response()
+            resp = ran_messages_pb2.RAN_indication_response()
             resp.ParseFromString(data_sck)
             print(resp)
             print("report index " + str(report_index))
@@ -72,7 +74,7 @@ def main():
             ue_info_list = list()
 
             for entry in resp.param_map:
-                if entry.key == RAN_parameter.UE_LIST:
+                if entry.key == ran_messages_pb2.RAN_parameter.UE_LIST:
                     if entry.ue_list.connected_ues > 0:
                         for ue_i in range(0, entry.ue_list.connected_ues):
                             ue_info_list.append(entry.ue_list.ue_info[ue_i])
