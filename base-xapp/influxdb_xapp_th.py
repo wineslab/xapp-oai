@@ -1,8 +1,6 @@
 import logging
 from os import lseek
 from xapp_control import *
-import xapp_control_ricbypass
-# from  ran_messages_pb2 import *
 import importlib
 ran_messages_pb2 = importlib.import_module("oai-oran-protolib.builds.ran_messages_pb2")
 from time import sleep, time
@@ -11,9 +9,6 @@ from random import randint
 
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
-
-BYPASS_RIC = False
-
 
 def trigger_indication():
     print("encoding sub request")
