@@ -6,7 +6,7 @@ import importlib
 ran_messages_pb2 = importlib.import_module("oai-oran-protolib.builds.ran_messages_pb2")
 from time import sleep
 
-BYPASS_RIC = True
+BYPASS_RIC = False
 
 def trigger_indication():
     print("Encoding sub request")
@@ -86,8 +86,9 @@ def main():
                 logging.info('Received data: ' + repr(data_sck))
                 logging.info("Slicing_Ctrl_Req Sent! \n")
                 control_buf = trigger_slicing_control(iter)
-                iter = iter + 1
+                iter = iter + 10
                 send_socket(control_sck, control_buf)
+                sleep(10)
 
 if __name__ == '__main__':
     main()
