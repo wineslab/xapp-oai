@@ -6,7 +6,7 @@ import importlib
 ran_messages_pb2 = importlib.import_module("oai-oran-protolib.builds.ran_messages_pb2")
 from time import sleep
 
-BYPASS_RIC = False
+BYPASS_RIC = True
 
 def trigger_indication():
     print("Encoding sub request")
@@ -24,7 +24,7 @@ def trigger_slicing_control(iter):
     print("Encoding initial RIC Control request")
     slicing_mess = ran_messages_pb2.slicing_control_m()
     slicing_mess.sst = 1
-    slicing_mess.sd  = 1
+    slicing_mess.sd  = 2
     slicing_mess.min_ratio = 11
     slicing_mess.max_ratio = 11 + iter % 90
 
@@ -46,8 +46,7 @@ def trigger_slicing_control(iter):
 
 def main():
     # configure logger and console output
-    logging.basicConfig(level=logging.DEBUG, filename='slicing-xapp-logger.log', filemode='a+',
-                        format='%(asctime)-15s %(levelname)-8s %(message)s')
+    logging.basicConfig(level=logging.DEBUG, filename='slicing-xapp-logger.log', filemode='a+',format='%(asctime)-15s %(levelname)-8s %(message)s')
     formatter = logging.Formatter('%(asctime)-15s %(levelname)-8s %(message)s')
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)
@@ -55,20 +54,13 @@ def main():
     logging.getLogger('').addHandler(console)
     
     if BYPASS_RIC: # connect directly to gnb_emu
-
-        buf = trigger_slicing_control()
-        xapp_control_ricbypass.send_to_socket(buf)
-        print("request sent, now waiting for incoming answers")
-
-        return
-
+        iter = 0
         while True:
-            r_buf = xapp_control_ricbypass.receive_from_socket()
-            ran_ind_resp = ran_messages_pb2.RAN_indication_response()
-            ran_ind_resp.ParseFromString(r_buf)
-            print(ran_ind_resp)
-            sleep(1)
+            buf = trigger_slicing_control(iter)
             xapp_control_ricbypass.send_to_socket(buf)
+            print("Slicing_Ctrl_Req Sent! \n")
+            iter = iter + 10
+            sleep(10)
 
     else:
         buf = trigger_indication()
@@ -92,7 +84,7 @@ def main():
                     break
             else:
                 logging.info('Received data: ' + repr(data_sck))
-                logging.info("Sending something back")
+                logging.info("Slicing_Ctrl_Req Sent! \n")
                 control_buf = trigger_slicing_control(iter)
                 iter = iter + 1
                 send_socket(control_sck, control_buf)
