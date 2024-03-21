@@ -719,7 +719,7 @@ const ProtobufCMessageDescriptor ran_message__descriptor =
   (ProtobufCMessageInit) ran_message__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor ue_info_m__field_descriptors[23] =
+static const ProtobufCFieldDescriptor ue_info_m__field_descriptors[25] =
 {
   {
     "rnti",
@@ -997,6 +997,30 @@ static const ProtobufCFieldDescriptor ue_info_m__field_descriptors[23] =
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
+  {
+    "nssai_sST",
+    24,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_INT32,
+    offsetof(UeInfoM, has_nssai_sst),
+    offsetof(UeInfoM, nssai_sst),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "nssai_sD",
+    25,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_INT32,
+    offsetof(UeInfoM, has_nssai_sd),
+    offsetof(UeInfoM, nssai_sd),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
 };
 static const unsigned ue_info_m__field_indices_by_name[] = {
   7,   /* field[7] = avg_prbs_dl */
@@ -1011,6 +1035,8 @@ static const unsigned ue_info_m__field_indices_by_name[] = {
   15,   /* field[15] = dl_total_bytes */
   5,   /* field[5] = is_GBR */
   9,   /* field[9] = mcs */
+  24,   /* field[24] = nssai_sD */
+  23,   /* field[23] = nssai_sST */
   14,   /* field[14] = pcmax */
   13,   /* field[13] = ph */
   0,   /* field[0] = rnti */
@@ -1026,7 +1052,7 @@ static const unsigned ue_info_m__field_indices_by_name[] = {
 static const ProtobufCIntRange ue_info_m__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 23 }
+  { 0, 25 }
 };
 const ProtobufCMessageDescriptor ue_info_m__descriptor =
 {
@@ -1036,7 +1062,7 @@ const ProtobufCMessageDescriptor ue_info_m__descriptor =
   "UeInfoM",
   "",
   sizeof(UeInfoM),
-  23,
+  25,
   ue_info_m__field_descriptors,
   ue_info_m__field_indices_by_name,
   1,  ue_info_m__number_ranges,
