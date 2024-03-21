@@ -92,6 +92,8 @@ message ue_info_m{
     optional float ul_bler = 22;
     optional float ul_mcs = 23;
 
+    optional int32 nssai_sST = 24;
+    optional int32 nssai_sD = 25;
 }
 
 message ue_list_m{

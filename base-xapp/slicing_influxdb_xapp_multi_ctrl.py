@@ -146,13 +146,25 @@ def main():
 
                 except Exception as e:
                     print("Skip log, influxdb error: " + str(e))
-
+     
             if not (report_index % 20):
-                control_buf = trigger_slicing_control(report_index // 2)
-                send_socket(control_sck, control_buf)
-                print("Control Buff Sent!\n")
+                if data_driven_ctrl:
+                    # Read of data
+                    # ue1 = read_dl_thruput()
+                    # ue2 = read_dl_thruput()
+                    # Simple AI Control Check
+                    
+                    # Sending Control
+
+                else:
+                    control_buf = trigger_slicing_control(report_index // 2)
+                    send_socket(control_sck, control_buf)
+                    print("Control Buff Sent!\n")
 
 
 if __name__ == '__main__':
+    
+    data_driven_ctrl = True
+
     main()
 

@@ -122,6 +122,11 @@ def main():
                     ul_bler = ue.ul_bler
                     ul_mcs = ue.ul_mcs
 
+                    nssai_sst = ue.nssai_sst
+                    nssai_sd  = ue.nssai_sd
+
+                    print(f"nssai_sst {nssai_sst}  nssai_sd {nssai_sd}")
+
                     # Compute throughput [Mbps] based on RNTI, timestamp, and dl_total_bytes
                     if rnti in ue_data_dict:
                         dl_th = ((dl_total_bytes - ue_data_dict[rnti]['dl_total_bytes'])/(timestamp - ue_data_dict[rnti]['timestamp']))*8
@@ -146,11 +151,22 @@ def main():
 
                 except Exception as e:
                     print("Skip log, influxdb error: " + str(e))
-
+     
+            dummy_ai_ctrl = False
             if not (report_index % 20):
-                control_buf = trigger_slicing_control(report_index // 2)
-                send_socket(control_sck, control_buf)
-                print("Control Buff Sent!\n")
+                if dummy_ai_ctrl:
+                    # Read of data
+                    # ue1 = read_dl_thruput()
+                    # ue2 = read_dl_thruput()
+                    # Simple AI Control Check
+                    
+                    # Sending Control
+
+
+                else:
+                    control_buf = trigger_slicing_control(report_index // 2)
+                    send_socket(control_sck, control_buf)
+                    print("Control Buff Sent!\n")
 
 
 if __name__ == '__main__':
