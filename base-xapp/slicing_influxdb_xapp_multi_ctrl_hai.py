@@ -22,13 +22,16 @@ def trigger_indication():
     print(buf)
     return buf
 
-def trigger_slicing_control(iter):
+def trigger_slicing_control(sst = 1, have_sd = True, min_ration = 20, max_ration = 80):
     print("Encoding initial RIC Control request")
     slicing_mess = ran_messages_pb2.slicing_control_m()
-    slicing_mess.sst = 1
-    # slicing_mess.sd  = 2
-    slicing_mess.min_ratio = 10
-    slicing_mess.max_ratio = 10 + iter % 90
+    slicing_mess.sst = sst
+    if have_sd:
+        slicing_mess.sd  = 2
+    else:
+        pass
+    slicing_mess.min_ratio = min_ration
+    slicing_mess.max_ratio = max_ration
 
     ctrl_mess  = ran_messages_pb2.RAN_param_map_entry()
     ctrl_mess.key = ran_messages_pb2.RAN_parameter.SLICING_CONTROL
@@ -122,10 +125,8 @@ def main():
                     ul_bler = ue.ul_bler
                     ul_mcs = ue.ul_mcs
 
-                    nssai_sst = ue.nssai_sst
-                    nssai_sd  = ue.nssai_sd
-
-                    print(f"nssai_sst {nssai_sst}  nssai_sd {nssai_sd}")
+                    nssai_sst = ue.nssai_sST
+                    nssai_sd  = ue.nssai_sD
 
                     # Compute throughput [Mbps] based on RNTI, timestamp, and dl_total_bytes
                     if rnti in ue_data_dict:
@@ -139,8 +140,14 @@ def main():
                     ue_data_dict[rnti] = {
                         'timestamp': timestamp,
                         'dl_total_bytes': dl_total_bytes,
-                        'ul_total_bytes': ul_total_bytes
+                        'ul_total_bytes': ul_total_bytes,
+                        'nssai_sst':nssai_sst,
+                        'nssai_sd':nssai_sd,
+                        'dl_th':dl_th,
+                        'ul_th':ul_th
                     }
+                    # ue_data_dict[rnti]['dl_th_history'] 
+
                     p = Point("xapp-stats").tag("rnti", rnti).field("timestamp", timestamp).field("avg_rsrp", avg_rsrp).field("ph", ph).field("pcmax", pcmax)\
                             .field("dl_total_bytes", dl_total_bytes).field("dl_errors", dl_errors).field("dl_bler", dl_bler).field("dl_mcs", dl_mcs)\
                             .field("ul_total_bytes", ul_total_bytes).field("ul_errors", ul_errors).field("ul_bler", ul_bler).field("ul_mcs", ul_mcs)\
@@ -152,8 +159,7 @@ def main():
                 except Exception as e:
                     print("Skip log, influxdb error: " + str(e))
      
-            dummy_ai_ctrl = False
-            if not (report_index % 20):
+            if not (report_index % 5):
                 if dummy_ai_ctrl:
                     # Read of data
                     # ue1 = read_dl_thruput()
@@ -161,14 +167,46 @@ def main():
                     # Simple AI Control Check
                     
                     # Sending Control
-
-
+                    dummy_data_driven_ctrl(ue_data_dict, control_sck)
                 else:
-                    control_buf = trigger_slicing_control(report_index // 2)
+                    control_buf = trigger_slicing_control(min_ration=10, max_ration= 10 + (report_index % 90) )
                     send_socket(control_sck, control_buf)
                     print("Control Buff Sent!\n")
 
+def dummy_data_driven_ctrl(ue_dict, ctrl_sock):
+    """Assume there are only two rnti
+    """
+    
+    rnti_list = list(ue_dict.keys())
+
+    sst_1 = ue_dict[rnti_list[0]]['nssai_sst']
+    sd_1  = ue_dict[rnti_list[0]]['nssai_sd']
+
+    sst_2 = ue_dict[rnti_list[1]]['nssai_sst']
+    sd_2  = ue_dict[rnti_list[1]]['nssai_sd']
+
+    if ue_dict[rnti_list[0]]['dl_th'] > ue_dict[rnti_list[1]]['dl_th']:
+
+        control_buf = trigger_slicing_control(sst=sst_1, have_sd=sd_1, min_ration=10, max_ration= 10 )
+        send_socket(ctrl_sock, control_buf)
+        print(f"Control Buff for NSSAI SST {sst_1} SD {sd_1} Sent!\n")
+        control_buf = trigger_slicing_control(sst=sst_2, have_sd=sd_2, min_ration=10, max_ration= 90 )
+        send_socket(ctrl_sock, control_buf)
+        print(f"Control Buff for NSSAI SST {sst_2} SD {sd_2} Sent!\n")
+
+    else:
+
+        control_buf = trigger_slicing_control(sst=sst_1, have_sd=sd_1, min_ration=10, max_ration= 90 )
+        send_socket(ctrl_sock, control_buf)
+        print(f"Control Buff for NSSAI SST {sst_1} SD {sd_1} Sent!\n")
+        control_buf = trigger_slicing_control(sst=sst_2, have_sd=sd_2, min_ration=10, max_ration= 10 )
+        send_socket(ctrl_sock, control_buf)
+        print(f"Control Buff for NSSAI SST {sst_2} SD {sd_2} Sent!\n")
+
+
 
 if __name__ == '__main__':
+
+    dummy_ai_ctrl = True
     main()
 
