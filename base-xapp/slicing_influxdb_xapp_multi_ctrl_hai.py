@@ -9,6 +9,14 @@ from random import randint
 
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
+from influxdb_client.client.query_api import QueryOptions
+import datetime
+
+
+## Variables
+DUMMY_AI_CTRL = True    # Enable dummy AI control on the slicing
+CTRL_FREQ = 10          # Frequency for the slicing control
+
 
 def trigger_indication():
     print("encoding sub request")
@@ -48,6 +56,79 @@ def trigger_slicing_control(sst = 1, have_sd = True, min_ration = 20, max_ration
 
     return buf
 
+def execute_query(query_api, bucket, start_time, end_time, field, n):
+    """Build, execute InfluxDB query, and return result"""
+
+    # Convert times to string in RFC3339 format, which is required by Flux
+    start_time_str = start_time + "Z"
+    end_time_str = end_time + "Z"
+
+    # Build the query
+    query_latest_points = f"""
+                    from(bucket: "{bucket}")
+                    |> range(start: {start_time_str}, stop: {end_time_str})
+                    |> filter(fn: (r) => r._measurement == "xapp-stats" and r._field == "{field}")
+                    |> group(columns: ["rnti"])
+                    |> sort(columns: ["_time"], desc: true)
+                    |> limit(n:{n})
+                    """
+
+    # Execute the quetry
+    return query_api.query(query_latest_points)
+
+
+def query_rnti(query_api, bucket, start_time, end_time):
+    """Query rnti and slices data from InfluxDB and returning a map of rnti with slices"""
+
+    # Execute queries to get slice for each rnti and downlink throughput info
+    sst_data = execute_query(query_api, bucket, start_time, end_time, "nssai_sst", 1)
+    sd_data = execute_query(query_api, bucket, start_time, end_time, "nssai_sd", 1)
+
+    # Map RNTI with sst and sd
+    rnti_slice_mapping = {}
+    for sst_table in sst_data:
+        for sst_record in sst_table:
+            rnti = sst_record.values['rnti']
+            sst = sst_record.values['_value']
+            rnti_slice_mapping[rnti] = {'sst': sst}
+
+
+    for sd_table in sd_data:
+        for sd_record in sd_table:
+            rnti = sd_record.values['rnti']
+            sd = sd_record.values['_value']
+            if rnti in rnti_slice_mapping:
+                rnti_slice_mapping[rnti]['sd'] = sd
+
+    return rnti_slice_mapping
+
+
+def query_dl_data(query_api, bucket, start_time, end_time, rnti_slice_mapping):
+    """Query Downlink data from InfluxDB and returning a map of avg dl data with slices""" 
+
+    dlth_data = execute_query(query_api, bucket, start_time, end_time, "dl_th", 10)
+
+    # Map each slide with downlink throughput and compute average
+    slice_dlth_mapping = {}
+    for dlth_table in dlth_data:
+        for dlth_record in dlth_table:
+            rnti = dlth_record.values['rnti']
+            dl_th = float(dlth_record.values['_value'])
+            slice_id = (rnti_slice_mapping[rnti]['sst'], rnti_slice_mapping[rnti]['sd'])
+
+            if slice_id not in slice_dlth_mapping:
+                slice_dlth_mapping[slice_id] = {'total_dl_th': 0, 'count': 0}
+
+            slice_dlth_mapping[slice_id]['total_dl_th'] += dl_th
+            slice_dlth_mapping[slice_id]['count'] += 1
+
+    for slice_id, data in slice_dlth_mapping.items():
+        avg_dl_th = data['total_dl_th'] / data['count']
+        slice_dlth_mapping[slice_id]['avg_dl_th'] = avg_dl_th
+
+    return slice_dlth_mapping
+
+
 def main():
 
     waittime = 1
@@ -67,6 +148,7 @@ def main():
     client = InfluxDBClient.from_config_file("influx-db-config.ini")
     print(client)
     write_api = client.write_api(write_options=SYNCHRONOUS)
+    query_api = client.query_api(query_options=QueryOptions())
 
     report_index = 0
 
@@ -151,7 +233,7 @@ def main():
                     p = Point("xapp-stats").tag("rnti", rnti).field("timestamp", timestamp).field("avg_rsrp", avg_rsrp).field("ph", ph).field("pcmax", pcmax)\
                             .field("dl_total_bytes", dl_total_bytes).field("dl_errors", dl_errors).field("dl_bler", dl_bler).field("dl_mcs", dl_mcs)\
                             .field("ul_total_bytes", ul_total_bytes).field("ul_errors", ul_errors).field("ul_bler", ul_bler).field("ul_mcs", ul_mcs)\
-                            .field("dl_th", dl_th).field("ul_th", ul_th)
+                            .field("nssai_sst", nssai_sst).field("nssai_d", nssai_sd).field("dl_th", dl_th).field("ul_th", ul_th)
                     print(p)
                     logging.info('Write to influxdb: ' + repr(p))
                     write_api.write(bucket=bucket, record=p)
@@ -159,54 +241,57 @@ def main():
                 except Exception as e:
                     print("Skip log, influxdb error: " + str(e))
      
-            if not (report_index % 5):
-                if dummy_ai_ctrl:
-                    # Read of data
-                    # ue1 = read_dl_thruput()
-                    # ue2 = read_dl_thruput()
-                    # Simple AI Control Check
+            if not (report_index % CTRL_FREQ):
+                if DUMMY_AI_CTRL:
+                    
+                    # Get start and end datetime
+                    start_time = datetime.datetime.now() - datetime.timedelta(seconds=3600)
+                    start_time = start_time.isoformat()
+                    end_time = datetime.datetime.now() + datetime.timedelta(hours=16) # Delta for timezones
+                    end_time = end_time.isoformat()
+
+                    rnti_slice_mapping = query_rnti(query_api, bucket, start_time, end_time)
+                    slice_dlth_mapping = query_dl_data(query_api, bucket, start_time, end_time, rnti_slice_mapping)
                     
                     # Sending Control
-                    dummy_data_driven_ctrl(ue_data_dict, control_sck)
+                    dummy_data_driven_ctrl(slice_dlth_mapping, control_sck)
                 else:
                     control_buf = trigger_slicing_control(min_ration=10, max_ration= 10 + (report_index % 90) )
                     send_socket(control_sck, control_buf)
                     print("Control Buff Sent!\n")
 
-def dummy_data_driven_ctrl(ue_dict, ctrl_sock):
+
+def dummy_data_driven_ctrl(slice_dlth_mapping, ctrl_sock):
     """Assume there are only two rnti
     """
     
-    rnti_list = list(ue_dict.keys())
+    sst_list = []
+    sd_list = []
+    dlth_list = []
 
-    sst_1 = ue_dict[rnti_list[0]]['nssai_sst']
-    sd_1  = ue_dict[rnti_list[0]]['nssai_sd']
+    # Remove slice (0,0) which is the N/A, and create lists
+    for (sst,sd), data in slice_dlth_mapping.items():
+        if sst != 0 and sd != 0:    
+            sst_list.append(sst)
+            sd_list.append(sd)
+            dlth_list.append(data['avg_dl_th'])
 
-    sst_2 = ue_dict[rnti_list[1]]['nssai_sst']
-    sd_2  = ue_dict[rnti_list[1]]['nssai_sd']
+    # Check if slice is needed
+    if len(dlth_list) < 2:
+        return
 
-    if ue_dict[rnti_list[0]]['dl_th'] > ue_dict[rnti_list[1]]['dl_th']:
+    # Condition for change and defining slice to be 10 and 90
+    r10 = int(dlth_list[0] < dlth_list[1])
+    r90 = int(dlth_list[0] >= dlth_list[1])
 
-        control_buf = trigger_slicing_control(sst=sst_1, have_sd=sd_1, min_ration=10, max_ration= 10 )
-        send_socket(ctrl_sock, control_buf)
-        print(f"Control Buff for NSSAI SST {sst_1} SD {sd_1} Sent!\n")
-        control_buf = trigger_slicing_control(sst=sst_2, have_sd=sd_2, min_ration=10, max_ration= 90 )
-        send_socket(ctrl_sock, control_buf)
-        print(f"Control Buff for NSSAI SST {sst_2} SD {sd_2} Sent!\n")
-
-    else:
-
-        control_buf = trigger_slicing_control(sst=sst_1, have_sd=sd_1, min_ration=10, max_ration= 90 )
-        send_socket(ctrl_sock, control_buf)
-        print(f"Control Buff for NSSAI SST {sst_1} SD {sd_1} Sent!\n")
-        control_buf = trigger_slicing_control(sst=sst_2, have_sd=sd_2, min_ration=10, max_ration= 10 )
-        send_socket(ctrl_sock, control_buf)
-        print(f"Control Buff for NSSAI SST {sst_2} SD {sd_2} Sent!\n")
-
+    control_buf = trigger_slicing_control(sst=sst_list[r10], have_sd=sd_list[r10], min_ration=10, max_ration= 10 )
+    send_socket(ctrl_sock, control_buf)
+    print(f"Control Buff for NSSAI SST {sst_list[r10]} SD {sd_list[r10]} Sent!\n")
+    control_buf = trigger_slicing_control(sst=sst_list[r90], have_sd=sd_list[r90], min_ration=10, max_ration= 90 )
+    send_socket(ctrl_sock, control_buf)
+    print(f"Control Buff for NSSAI SST {sst_list[r90]} SD {sd_list[r90]} Sent!\n")
 
 
 if __name__ == '__main__':
-
-    dummy_ai_ctrl = True
     main()
 
