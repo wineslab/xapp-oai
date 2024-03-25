@@ -239,7 +239,7 @@ def main():
                     p = Point("xapp-stats").tag("rnti", rnti).field("timestamp", timestamp).field("avg_rsrp", avg_rsrp).field("ph", ph).field("pcmax", pcmax)\
                             .field("dl_total_bytes", dl_total_bytes).field("dl_errors", dl_errors).field("dl_bler", dl_bler).field("dl_mcs", dl_mcs)\
                             .field("ul_total_bytes", ul_total_bytes).field("ul_errors", ul_errors).field("ul_bler", ul_bler).field("ul_mcs", ul_mcs)\
-                            .field("nssai_sst", nssai_sst).field("nssai_d", nssai_sd).field("dl_th", dl_th).field("ul_th", ul_th)
+                            .field("nssai_sst", nssai_sst).field("nssai_sd", nssai_sd).field("dl_th", dl_th).field("ul_th", ul_th)
                     print(p)
                     logging.info('Write to influxdb: ' + repr(p))
                     write_api.write(bucket=bucket, record=p)
