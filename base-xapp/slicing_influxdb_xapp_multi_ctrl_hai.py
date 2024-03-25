@@ -114,13 +114,19 @@ def query_dl_data(query_api, bucket, start_time, end_time, rnti_slice_mapping):
         for dlth_record in dlth_table:
             rnti = dlth_record.values['rnti']
             dl_th = float(dlth_record.values['_value'])
-            slice_id = (rnti_slice_mapping[rnti]['sst'], rnti_slice_mapping[rnti]['sd'])
 
-            if slice_id not in slice_dlth_mapping:
-                slice_dlth_mapping[slice_id] = {'total_dl_th': 0, 'count': 0}
+            # Check rnti is in rnti_slice_mapping and both sst and sd are defined
+            if rnti in rnti_slice_mapping and 'sst' in rnti_slice_mapping[rnti] and 'sd' in rnti_slice_mapping[rnti]:
+                slice_id = (rnti_slice_mapping[rnti]['sst'], rnti_slice_mapping[rnti]['sd'])
 
-            slice_dlth_mapping[slice_id]['total_dl_th'] += dl_th
-            slice_dlth_mapping[slice_id]['count'] += 1
+                if slice_id not in slice_dlth_mapping:
+                    slice_dlth_mapping[slice_id] = {'total_dl_th': 0, 'count': 0}
+
+                slice_dlth_mapping[slice_id]['total_dl_th'] += dl_th
+                slice_dlth_mapping[slice_id]['count'] += 1
+            else:
+                # rnti does not have defined sst and sd, skip processing
+                continue
 
     for slice_id, data in slice_dlth_mapping.items():
         avg_dl_th = data['total_dl_th'] / data['count']
@@ -251,8 +257,10 @@ def main():
                     end_time = end_time.isoformat()
 
                     rnti_slice_mapping = query_rnti(query_api, bucket, start_time, end_time)
+                    print(rnti_slice_mapping)
                     slice_dlth_mapping = query_dl_data(query_api, bucket, start_time, end_time, rnti_slice_mapping)
-                    
+                    print(slice_dlth_mapping)
+
                     # Sending Control
                     dummy_data_driven_ctrl(slice_dlth_mapping, control_sck)
                 else:
@@ -276,7 +284,7 @@ def dummy_data_driven_ctrl(slice_dlth_mapping, ctrl_sock):
             sd_list.append(sd)
             dlth_list.append(data['avg_dl_th'])
 
-    # Check if slice is needed
+    # Check if slice control is needed when at leas 2 slices are found
     if len(dlth_list) < 2:
         return
 
