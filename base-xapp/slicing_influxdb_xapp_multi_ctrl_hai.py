@@ -30,7 +30,7 @@ def trigger_indication():
     print(buf)
     return buf
 
-def trigger_slicing_control(sst = 1, have_sd = True, min_ration = 20, max_ration = 80):
+def trigger_slicing_control(sst = 1, have_sd = False, min_ration = 20, max_ration = 80):
     print("Encoding initial RIC Control request")
     slicing_mess = ran_messages_pb2.slicing_control_m()
     slicing_mess.sst = sst
@@ -251,7 +251,7 @@ def main():
                 if DUMMY_AI_CTRL:
                     
                     # Get start and end datetime
-                    start_time = datetime.datetime.now() - datetime.timedelta(seconds=3600)
+                    start_time = datetime.datetime.now() - datetime.timedelta(seconds=60)
                     start_time = start_time.isoformat()
                     end_time = datetime.datetime.now() + datetime.timedelta(hours=16) # Delta for timezones
                     end_time = end_time.isoformat()
@@ -279,25 +279,30 @@ def dummy_data_driven_ctrl(slice_dlth_mapping, ctrl_sock):
 
     # Remove slice (0,0) which is the N/A, and create lists
     for (sst,sd), data in slice_dlth_mapping.items():
-        if sst != 0 and sd != 0:    
+        if sst == 0 and sd == 0:
+            continue
+        else:
             sst_list.append(sst)
             sd_list.append(sd)
             dlth_list.append(data['avg_dl_th'])
-
-    # Check if slice control is needed when at leas 2 slices are found
+    
+    # Check if slice control is needed when at least 2 slices are found
     if len(dlth_list) < 2:
         return
 
-    # Condition for change and defining slice to be 10 and 90
-    r10 = int(dlth_list[0] < dlth_list[1])
-    r90 = int(dlth_list[0] >= dlth_list[1])
-
-    control_buf = trigger_slicing_control(sst=sst_list[r10], have_sd=sd_list[r10], min_ration=10, max_ration= 10 )
+    # Condition for change and defining slice to be 5 and 90
+    index10 = 1 if dlth_list[0] < dlth_list[1] else 0
+    index90 = 0 if index10 == 1 else 1
+    sst10, sd10 = sst_list[index10], sd_list[index10]
+    sst90, sd90 = sst_list[index90], sd_list[index90]
+    
+    # Send control
+    control_buf = trigger_slicing_control(sst=sst10, have_sd=sd10, min_ration=10, max_ration=10)
     send_socket(ctrl_sock, control_buf)
-    print(f"Control Buff for NSSAI SST {sst_list[r10]} SD {sd_list[r10]} Sent!\n")
-    control_buf = trigger_slicing_control(sst=sst_list[r90], have_sd=sd_list[r90], min_ration=10, max_ration= 90 )
+    print(f"Control Buff for NSSAI SST {sst10} SD {sd10} Sent!\n")
+    control_buf = trigger_slicing_control(sst=sst90, have_sd=sd90, min_ration=10, max_ration=90)
     send_socket(ctrl_sock, control_buf)
-    print(f"Control Buff for NSSAI SST {sst_list[r90]} SD {sd_list[r90]} Sent!\n")
+    print(f"Control Buff for NSSAI SST {sst90} SD {sd90} Sent!\n")
 
 
 if __name__ == '__main__':
