@@ -221,8 +221,9 @@ def main():
                         dl_th = ((dl_total_bytes - ue_data_dict[rnti]['dl_total_bytes'])/(timestamp - ue_data_dict[rnti]['timestamp']))*8
                         ul_th = ((ul_total_bytes - ue_data_dict[rnti]['ul_total_bytes'])/(timestamp - ue_data_dict[rnti]['timestamp']))*8
                         
-                        if dl_th > 60000000:
-                            dl_th = 60000000
+                        # Cap downlink throughput to 60 Mbps
+                        # if dl_th > 60000000:
+                        #     dl_th = 60000000
 
                     else:
                         dl_th = 0.0
@@ -294,20 +295,24 @@ def dummy_data_driven_ctrl(slice_dlth_mapping, ctrl_sock):
     if len(dlth_list) < 2:
         return
 
-    # Condition for change and defining slice to be 5 and 90
-    index10 = 1 if dlth_list[0] < dlth_list[1] else 0
-    index90 = 0 if index10 == 1 else 1
-    sst10, sd10 = sst_list[index10], sd_list[index10]
-    sst90, sd90 = sst_list[index90], sd_list[index90]
+    # Condition for change and defining slice to be 5 and 95
+    index5 = 1 if dlth_list[0] < dlth_list[1] else 0
+    index95 = 0 if index5 == 1 else 1
+    sst5, sd5 = sst_list[index5], sd_list[index5]
+    sst95, sd95 = sst_list[index95], sd_list[index95]
     
-    # Send control
-    control_buf = trigger_slicing_control(sst=sst10, have_sd=sd10, min_ration=5, max_ration=5)
+    # Send first control
+    control_buf = trigger_slicing_control(sst=sst5, have_sd=sd5, min_ration=5, max_ration=5)
     send_socket(ctrl_sock, control_buf)
-    print(f"Control Buff 5 for NSSAI SST {sst10} SD {sd10} Sent!\n")
+    print(f"Control Buff 5 for NSSAI SST {sst5} SD {sd5} Sent!\n")
+    
+    # Sleep between two control sends to avoid overlaps
     sleep(0.5)
-    control_buf = trigger_slicing_control(sst=sst90, have_sd=sd90, min_ration=10, max_ration=95)
+    
+    # Send second control
+    control_buf = trigger_slicing_control(sst=sst95, have_sd=sd95, min_ration=10, max_ration=95)
     send_socket(ctrl_sock, control_buf)
-    print(f"Control Buff 95 for NSSAI SST {sst90} SD {sd90} Sent!\n")
+    print(f"Control Buff 95 for NSSAI SST {sst95} SD {sd95} Sent!\n")
 
 
 if __name__ == '__main__':
