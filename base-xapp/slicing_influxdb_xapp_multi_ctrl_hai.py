@@ -15,7 +15,7 @@ import datetime
 
 ## Variables
 DUMMY_AI_CTRL = True    # Enable dummy AI control on the slicing
-CTRL_FREQ = 10          # Frequency for the slicing control
+CTRL_FREQ = 15          # Frequency for the slicing control
 
 
 def trigger_indication():
@@ -27,7 +27,7 @@ def trigger_indication():
     #inner_mess.target_params.extend([RAN_parameter.GNB_ID])
     master_mess.ran_indication_request.CopyFrom(inner_mess)
     buf = master_mess.SerializeToString()
-    print(buf)
+    # print(buf)
     return buf
 
 def trigger_slicing_control(sst = 1, have_sd = False, min_ration = 20, max_ration = 80):
@@ -176,8 +176,8 @@ def main():
             print("RIC report received")
             resp = ran_messages_pb2.RAN_indication_response()
             resp.ParseFromString(data_sck)
-            print(resp)
-            print("report index " + str(report_index))
+            # print(resp)
+            # print("report index " + str(report_index))
             report_index += 1
 
             ue_info_list = list()
@@ -220,6 +220,10 @@ def main():
                     if rnti in ue_data_dict:
                         dl_th = ((dl_total_bytes - ue_data_dict[rnti]['dl_total_bytes'])/(timestamp - ue_data_dict[rnti]['timestamp']))*8
                         ul_th = ((ul_total_bytes - ue_data_dict[rnti]['ul_total_bytes'])/(timestamp - ue_data_dict[rnti]['timestamp']))*8
+                        
+                        if dl_th > 60000000:
+                            dl_th = 60000000
+
                     else:
                         dl_th = 0.0
                         ul_th = 0.0
@@ -241,7 +245,7 @@ def main():
                             .field("ul_total_bytes", ul_total_bytes).field("ul_errors", ul_errors).field("ul_bler", ul_bler).field("ul_mcs", ul_mcs)\
                             .field("nssai_sst", nssai_sst).field("nssai_sd", nssai_sd).field("dl_th", dl_th).field("ul_th", ul_th)
                     print(p)
-                    logging.info('Write to influxdb: ' + repr(p))
+                    # logging.info('Write to influxdb: ' + repr(p))
                     write_api.write(bucket=bucket, record=p)
 
                 except Exception as e:
@@ -297,12 +301,13 @@ def dummy_data_driven_ctrl(slice_dlth_mapping, ctrl_sock):
     sst90, sd90 = sst_list[index90], sd_list[index90]
     
     # Send control
-    control_buf = trigger_slicing_control(sst=sst10, have_sd=sd10, min_ration=10, max_ration=10)
+    control_buf = trigger_slicing_control(sst=sst10, have_sd=sd10, min_ration=5, max_ration=5)
     send_socket(ctrl_sock, control_buf)
-    print(f"Control Buff for NSSAI SST {sst10} SD {sd10} Sent!\n")
-    control_buf = trigger_slicing_control(sst=sst90, have_sd=sd90, min_ration=10, max_ration=90)
+    print(f"Control Buff 5 for NSSAI SST {sst10} SD {sd10} Sent!\n")
+    sleep(0.5)
+    control_buf = trigger_slicing_control(sst=sst90, have_sd=sd90, min_ration=10, max_ration=95)
     send_socket(ctrl_sock, control_buf)
-    print(f"Control Buff for NSSAI SST {sst90} SD {sd90} Sent!\n")
+    print(f"Control Buff 95 for NSSAI SST {sst90} SD {sd90} Sent!\n")
 
 
 if __name__ == '__main__':
