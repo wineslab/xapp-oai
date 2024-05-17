@@ -1,0 +1,16 @@
+{
+    "xapp_name": "xapp-oai-nvidia-demo",
+    "version": "1.0.0",
+    "containers": [{"image":{"name":"deployment-pipeline/xapp-oai-nvidia-demo","pull_secret":"regcred","registry":"image-registry.openshift-image-registry.svc:5000","tag":"latest"},"image_pull_policy":"Always","name":"xapp-oai-nvidia-demo","target_gnb":"gnb_734_733_b5c67780"}],
+    "messaging": {
+        "ports": [{"container":"xapp-oai-nvidia-demo","description":"http service","name":"http","port":8080},{"container":"xapp-oai-nvidia-demo","description":"rmr receive data port for xapp-sched-slicing","name":"rmr-data","policies":[1],"port":4560,"rxMessages":["RIC_SUB_RESP","A1_POLICY_REQ","RIC_HEALTH_CHECK_REQ","RIC_INDICATION"],"txMessages":["RIC_SUB_REQ","A1_POLICY_RESP","A1_POLICY_QUERY","RIC_HEALTH_CHECK_RESP","RIC_CONTROL"]},{"container":"xapp-oai-nvidia-demo","description":"rmr route port for xapp-sched-slicing","name":"rmr-route","port":4561},{"container":"xapp-oai-nvidia-demo","description":"external control socket for xapp-sched-slicing","name":"ctrl-socket","port":7000}]
+    },
+    "rmr": {
+        "protPort": "tcp:4560",
+        "maxSize": 2072,
+        "numWorkers": 1,
+        "txMessages": ["RIC_SUB_REQ","A1_POLICY_RESP","A1_POLICY_QUERY","RIC_HEALTH_CHECK_RESP","RIC_CONTROL"],
+        "rxMessages": ["RIC_SUB_RESP","A1_POLICY_REQ","RIC_HEALTH_CHECK_REQ","RIC_INDICATION"],
+        "policies": [1]
+    }
+}

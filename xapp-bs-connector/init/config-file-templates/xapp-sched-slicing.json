@@ -1,0 +1,56 @@
+ {
+        "xapp_name": "xapp-sched-slicing",
+        "version": "1.0.0",
+        "containers": [
+            {
+                "name": "xapp-sched-slicing",
+                "image": {
+                    "registry": "image-registry.openshift-image-registry.svc:5000",
+                    "name": "deployment-pipeline/xapp-sched-slicing",
+                    "tag": "latest",
+		            "pull_secret": "regcred"
+               	},
+                "image_pull_policy": "Always",
+                "target_gnb": ""
+            }
+        ],
+        "messaging": {
+            "ports": [
+                {
+                    "name": "http",
+                    "container": "xapp-sched-slicing",
+                    "port": 8080,
+                    "description": "http service"
+                },
+                {
+                    "name": "rmr-data",
+                    "container": "xapp-sched-slicing",
+                    "port": 4560,
+                    "rxMessages": ["RIC_SUB_RESP", "A1_POLICY_REQ", "RIC_HEALTH_CHECK_REQ", "RIC_INDICATION"],
+                    "txMessages": ["RIC_SUB_REQ", "A1_POLICY_RESP", "A1_POLICY_QUERY", "RIC_HEALTH_CHECK_RESP", "RIC_CONTROL"],
+                    "policies": [1],
+                    "description": "rmr receive data port for xapp-sched-slicing"
+                },
+                {
+                    "name": "rmr-route",
+                    "container": "xapp-sched-slicing",
+                    "port": 4561,
+                    "description": "rmr route port for xapp-sched-slicing"
+                },
+                {
+                    "name": "ctrl-socket",
+                    "container": "xapp-sched-slicing",
+                    "port": 7000,
+                    "description": "external control socket for xapp-sched-slicing"
+                }
+            ]
+        },
+        "rmr": {
+            "protPort": "tcp:4560",
+            "maxSize": 2072,
+            "numWorkers": 1,
+            "txMessages": ["RIC_SUB_REQ", "A1_POLICY_RESP", "A1_POLICY_QUERY", "RIC_HEALTH_CHECK_RESP", "RIC_CONTROL"],
+            "rxMessages": ["RIC_SUB_RESP", "A1_POLICY_REQ", "RIC_HEALTH_CHECK_REQ", "RIC_INDICATION"],
+	    "policies": [1]
+        }
+  }
