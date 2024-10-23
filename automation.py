@@ -3,8 +3,8 @@ import time
 import os
 
 # Define commands to run as subprocesses
-xapp_bs_connector_cmd = ["/root/xapp/run_xapp.sh"]
-xapp_py_cmd = ["cd /root/xapp-oai-dev/base-xapp/; python influxdb_xapp_th.py"]
+xapp_bs_connector_cmd = ["cd /root/git/xapp-oranslice/xapp_bs_connector/; run_xapp.sh "]
+xapp_py_cmd = ["cd /root/git/xapp-oranslice/base-xapp/; python slicing_ctrl_influxdb_xapp_kpm.py"]
 
 # Start subprocess 1 and redirect its output to /tmp/process1.log
 log_file_path = "/tmp/xapp_bs_connector.log"
@@ -20,11 +20,11 @@ while True:
         with open(log_file_path, "r") as f:
             if specific_string in f.read():
                 break
-    time.sleep(5)  # Check every second
+    time.sleep(2)  # Check every second
 
 log_file_path_py = "/tmp/xapp_py.log"
 log_file_py = open(log_file_path_py, "w")
-
+print("Starting xApp python logic")
 xapp_py_process = subprocess.Popen(xapp_py_cmd, stdout=log_file_py, stderr=log_file_py, shell=True)
 
 while True:
