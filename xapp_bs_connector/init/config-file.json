@@ -1,0 +1,48 @@
+ {
+        "xapp_name": "hwxapp",
+        "version": "1.0.0",
+        "containers": [
+            {
+                "name": "hwxapp",
+                "image": {
+                    "registry": "image-registry.openshift-image-registry.svc:5000",
+                    "name": "deployment-pipeline/xapp-sched-slicing",
+                    "tag": "latest",
+		            "pull_secret": "regcred"
+               	}
+            }
+        ],
+        "messaging": {
+            "ports": [
+                {
+                    "name": "http",
+                    "container": "hwxapp",
+                    "port": 8080,
+                    "description": "http service"
+                },
+                {
+                    "name": "rmr-data",
+                    "container": "hwxapp",
+                    "port": 4560,
+                    "rxMessages": ["RIC_SUB_RESP", "A1_POLICY_REQ", "RIC_HEALTH_CHECK_REQ", "RIC_INDICATION"],
+                    "txMessages": ["RIC_SUB_REQ", "A1_POLICY_RESP", "A1_POLICY_QUERY", "RIC_HEALTH_CHECK_RESP", "RIC_CONTROL"],
+                    "policies": [1],
+                    "description": "rmr receive data port for HWxapp"
+                },
+                {
+                    "name": "rmr-route",
+                    "container": "hwxapp",
+                    "port": 4561,
+                    "description": "rmr route port for hwxapp"
+                }
+            ]
+        },
+        "rmr": {
+            "protPort": "tcp:4560",
+            "maxSize": 2072,
+            "numWorkers": 1,
+            "txMessages": ["RIC_SUB_REQ", "A1_POLICY_RESP", "A1_POLICY_QUERY", "RIC_HEALTH_CHECK_RESP", "RIC_CONTROL"],
+            "rxMessages": ["RIC_SUB_RESP", "A1_POLICY_REQ", "RIC_HEALTH_CHECK_REQ", "RIC_INDICATION"],
+	    "policies": [1]
+        }
+  }

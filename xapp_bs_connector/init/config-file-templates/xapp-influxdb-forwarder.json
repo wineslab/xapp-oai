@@ -1,0 +1,56 @@
+ {
+        "xapp_name": "xapp-influxdb-forwarder",
+        "version": "1.0.0",
+        "containers": [
+            {
+                "name": "xapp-influxdb-forwarder",
+                "image": {
+                    "registry": "image-registry.openshift-image-registry.svc:5000",
+                    "name": "deployment-pipeline/xapp-influxdb-forwarder",
+                    "tag": "latest",
+                    "pull_secret": "regcred"
+                },
+                "image_pull_policy": "Always",
+                "target_gnb": ""
+            }
+        ],
+        "messaging": {
+            "ports": [
+                {
+                    "name": "http",
+                    "container": "xapp-influxdb-forwarder",
+                    "port": 8080,
+                    "description": "http service"
+                },
+                {
+                    "name": "rmr-data",
+                    "container": "xapp-influxdb-forwarder",
+                    "port": 4560,
+                    "rxMessages": ["RIC_SUB_RESP", "A1_POLICY_REQ", "RIC_HEALTH_CHECK_REQ", "RIC_INDICATION"],
+                    "txMessages": ["RIC_SUB_REQ", "A1_POLICY_RESP", "A1_POLICY_QUERY", "RIC_HEALTH_CHECK_RESP"],
+                    "policies": [1],
+                    "description": "rmr receive data port for HWxapp"
+                },
+                {
+                    "name": "rmr-route",
+                    "container": "xapp-influxdb-forwarder",
+                    "port": 4561,
+                    "description": "rmr route port for xapp-influxdb-forwarder"
+                },
+                {
+                    "name": "ctrl-socket",
+                    "container": "xapp-influxdb-forwarder",
+                    "port": 7000,
+                    "description": "external control socket for xapp-influxdb-forwarder"
+                }
+            ]
+        },
+        "rmr": {
+            "protPort": "tcp:4560",
+            "maxSize": 2072,
+            "numWorkers": 1,
+            "txMessages": ["RIC_SUB_REQ", "A1_POLICY_RESP", "A1_POLICY_QUERY", "RIC_HEALTH_CHECK_RESP"],
+            "rxMessages": ["RIC_SUB_RESP", "A1_POLICY_REQ", "RIC_HEALTH_CHECK_REQ", "RIC_INDICATION"],
+        "policies": [1]
+        }
+  }
